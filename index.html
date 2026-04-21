@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>irlos — the stream server that just works</title>
+  <meta name="description" content="Irlos is a GPL Ubuntu 22.04-based plug-and-play stream server distro for IRL streamers running NVIDIA GPUs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #101010;
+      --surface-2: #141414;
+      --text: #f5f1e8;
+      --muted: #beb8ad;
+      --accent: #00d4ff;
+      --border: #262626;
+      --max: 1280px;
+      --scanline: rgba(0, 212, 255, 0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", system-ui, sans-serif;
+      min-height: 100%;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .wrap {
+      width: min(100% - 2.5rem, var(--max));
+      margin-inline: auto;
+    }
+
+    .mono {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .hero {
+      padding: 2rem 0 4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .hero-top {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .logotype {
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-transform: lowercase;
+    }
+
+    .live {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .dot {
+      width: 0.55rem;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.45);
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.45); opacity: 0.95; }
+      70% { box-shadow: 0 0 0 12px rgba(0, 212, 255, 0); opacity: 1; }
+      100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); opacity: 0.95; }
+    }
+
+    .hero-copy {
+      padding-top: 2.5rem;
+      max-width: 42rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: clamp(2.5rem, 10vw, 7.3rem);
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      text-transform: lowercase;
+      font-weight: 800;
+    }
+
+    .subhead {
+      margin-top: 1.3rem;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+      letter-spacing: 0.015em;
+    }
+
+    .cta-row {
+      margin-top: 2rem;
+      display: flex;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.88rem 1.15rem;
+      border: 1px solid var(--accent);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      transition: 120ms ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #001016;
+      font-weight: 700;
+    }
+
+    .btn-ghost {
+      color: var(--text);
+      border-color: #3a3a3a;
+      background: transparent;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .terminal {
+      background: linear-gradient(180deg, #0f1113, #0d0f10);
+      border: 1px solid #2c3235;
+      padding: 1rem;
+      min-height: 23rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: clamp(0.68rem, 1.2vw, 0.84rem);
+      line-height: 1.38;
+      color: #ddf8ff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 3px,
+        var(--scanline) 4px
+      );
+      opacity: 0.33;
+    }
+
+    .terminal::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 75% 10%, rgba(0,212,255,0.08), transparent 50%);
+      pointer-events: none;
+    }
+
+    .term-line { white-space: pre; }
+    .prompt { color: var(--accent); }
+    .cursor {
+      display: inline-block;
+      width: 0.62ch;
+      margin-left: 0.1ch;
+      background: #f2fdff;
+      animation: blink 1s step-end infinite;
+      vertical-align: -0.05em;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .spec-strip {
+      margin-top: 2rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .spec-row {
+      width: min(100% - 2.5rem, var(--max));
+      margin-inline: auto;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      padding: 0.9rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      color: #d4d0c8;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+    }
+
+    .spec-item {
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity 300ms ease, transform 300ms ease;
+      transition-delay: calc(var(--i) * 90ms);
+    }
+
+    .spec-item.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .pipe {
+      color: #4a4a4a;
+      user-select: none;
+    }
+
+    .what {
+      padding: 5.8rem 0;
+    }
+
+    .what-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2rem;
+    }
+
+    .num {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 1.1rem;
+    }
+
+    .what h2 {
+      margin: 0 0 0.65rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 1.12rem;
+      text-transform: lowercase;
+      letter-spacing: -0.02em;
+    }
+
+    .what p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 34ch;
+    }
+
+    .philosophy {
+      padding: 13rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #0d0d0d, #0b0b0b);
+    }
+
+    .kicker {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      font-size: 0.74rem;
+      margin-bottom: 1.5rem;
+    }
+
+    blockquote {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      max-width: 65ch;
+      font-size: clamp(1.06rem, 1.8vw, 1.35rem);
+      line-height: 1.6;
+      color: #ece8df;
+    }
+
+    .hl {
+      color: var(--accent);
+      text-decoration: underline;
+      text-decoration-color: color-mix(in srgb, var(--accent) 65%, transparent);
+      text-underline-offset: 0.17em;
+      text-decoration-thickness: 0.08em;
+    }
+
+    .sig {
+      margin-top: 2rem;
+      text-align: right;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      color: #d0cbc0;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      text-transform: lowercase;
+    }
+
+    footer {
+      padding: 2rem 0 2.7rem;
+    }
+
+    .foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 1.4rem;
+      justify-content: space-between;
+      align-items: center;
+      color: #c7c2b8;
+      font-size: 0.88rem;
+    }
+
+    .badge {
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.28rem 0.52rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.67rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .links {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.85rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #d7d2c8;
+    }
+
+    .links a { opacity: 0.85; }
+    .links a:hover { opacity: 1; color: var(--accent); }
+
+    .copyright {
+      width: 100%;
+      margin-top: 0.35rem;
+      color: #918c84;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+    }
+
+    @media (max-width: 1024px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .hero-copy { padding-top: 0.5rem; }
+      .terminal { min-height: 20rem; }
+      .what-grid { grid-template-columns: 1fr; gap: 2.4rem; }
+      .philosophy { padding: 9rem 0; }
+    }
+
+    @media (max-width: 560px) {
+      .wrap, .spec-row { width: min(100% - 1.3rem, var(--max)); }
+      .hero { padding-top: 1.4rem; }
+      h1 { font-size: clamp(2rem, 14vw, 3.8rem); }
+      .terminal { font-size: 0.64rem; }
+      .philosophy { padding: 7rem 0; }
+      blockquote { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="wrap hero" aria-label="Hero">
+      <div class="hero-top">
+        <div class="logotype mono">irlos</div>
+        <div class="live mono" aria-label="live indicator"><span class="dot" aria-hidden="true"></span>live</div>
+      </div>
+
+      <div class="hero-copy">
+        <h1>the stream server<br />that just works.</h1>
+        <p class="subhead">GPL. plug-and-play. built for IRL.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#">download .iso</a>
+          <a class="btn btn-ghost" href="https://example.com/repo" target="_blank" rel="noreferrer">view source</a>
+        </div>
+      </div>
+
+      <aside class="terminal" aria-label="Irlos setup terminal preview">
+<div class="term-line">┌──────────────────────────────────────────────────────────┐</div>
+<div class="term-line">│ irlos setup wizard                                       │</div>
+<div class="term-line">├──────────────────────────────────────────────────────────┤</div>
+<div class="term-line">│ network status: wlan0 connected                          │</div>
+<div class="term-line">│ gpu detect: NVIDIA RTX 4070 [ok]                         │</div>
+<div class="term-line">│                                                          │</div>
+<div class="term-line">│ enter stream key                                         │</div>
+<div class="term-line">│ <span class="prompt">&gt; </span>sk_live_xxxxx_xxxxxxxxxxxxxxxxx<span class="cursor" aria-hidden="true"></span>   │</div>
+<div class="term-line">│                                                          │</div>
+<div class="term-line">│ select platform                                          │</div>
+<div class="term-line">│ [1] twitch   [2] kick   [3] youtube                      │</div>
+<div class="term-line">│ <span class="prompt">&gt; </span>1                                                   │</div>
+<div class="term-line">│                                                          │</div>
+<div class="term-line">│ set vnc password [hidden]                                │</div>
+<div class="term-line">│ ssh public key imported                                  │</div>
+<div class="term-line">│                                                          │</div>
+<div class="term-line">│ finalize + write config                                  │</div>
+<div class="term-line">│ <span class="prompt">&gt; </span>continue                                            │</div>
+<div class="term-line">└──────────────────────────────────────────────────────────┘</div>
+      </aside>
+    </section>
+
+    <section class="spec-strip" aria-label="Technical specs">
+      <div class="spec-row" id="specRow">
+        <span class="spec-item" style="--i:0">base: ubuntu 22.04</span>
+        <span class="pipe">│</span>
+        <span class="spec-item" style="--i:1">gpu: nvidia</span>
+        <span class="pipe">│</span>
+        <span class="spec-item" style="--i:2">stack: obs · noalbs · srt · sls</span>
+        <span class="pipe">│</span>
+        <span class="spec-item" style="--i:3">boot: &lt;60s</span>
+        <span class="pipe">│</span>
+        <span class="spec-item" style="--i:4">license: gpl-3.0</span>
+      </div>
+    </section>
+
+    <section class="wrap what" aria-label="What it does">
+      <div class="what-grid">
+        <article>
+          <div class="num">01 /</div>
+          <h2>pre-baked image</h2>
+          <p>Ubuntu 22.04 base with OBS, noalbs, SRT/SLS, Xorg, Openbox, and x11vnc pre-installed. Flash it, boot it, and skip the setup marathon.</p>
+        </article>
+        <article>
+          <div class="num">02 /</div>
+          <h2>first-boot TUI</h2>
+          <p>A curses wizard collects stream key, platform, WiFi, SSH key, and VNC password with sane defaults. It writes everything once and stays out of your way.</p>
+        </article>
+        <article>
+          <div class="num">03 /</div>
+          <h2>stream in minutes</h2>
+          <p>NVIDIA hardware acceleration and battle-tested transport protocols are configured out of the box. The box boots fast and goes live without ceremony.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="philosophy" aria-label="Project philosophy">
+      <div class="wrap">
+        <div class="kicker">// PHILOSOPHY</div>
+        <blockquote>
+          <p>SRT is <span class="hl">GPL</span>. SLS is <span class="hl">GPL</span>. noalbs is <span class="hl">GPL</span>. OBS is <span class="hl">GPL</span>. ffmpeg is <span class="hl">LGPL</span>. The authors of these tools released them under copyleft licenses specifically so that the community could build on them freely. I'm continuing that tradition. If you've been making money on top of this stack, congratulations — so have I, and so will future Irlos users. The license you've been benefiting from grants the same freedoms to everyone.</p>
+        </blockquote>
+        <div class="sig">— ethan, irlos maintainer</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div class="mono">irlos</div>
+      <div class="badge">gpl-3.0</div>
+      <nav class="links" aria-label="Footer links">
+        <a href="https://example.com/repo" target="_blank" rel="noreferrer">source</a>
+        <a href="https://example.com/docs" target="_blank" rel="noreferrer">docs</a>
+        <a href="https://example.com/matrix" target="_blank" rel="noreferrer">matrix</a>
+      </nav>
+      <div class="copyright">(c) 2026 — copyleft, all wrongs reserved</div>
+    </div>
+  </footer>
+
+  <script>
+    const specRow = document.getElementById('specRow');
+    const specItems = [...document.querySelectorAll('.spec-item')];
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          specItems.forEach((item) => item.classList.add('revealed'));
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+
+    observer.observe(specRow);
+  </script>
+</body>
+</html>
