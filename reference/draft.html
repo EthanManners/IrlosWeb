@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>irlos: click one button, go live anywhere</title>
+  <meta name="description" content="Click one button, go live anywhere. No tech headaches, no coding, no setup. Open source IRL streaming. GPL-3.0, full source, no lock-in." />
+
+  <meta property="og:title" content="irlos: click one button, go live anywhere" />
+  <meta property="og:description" content="No tech headaches, no coding, no setup. Open source IRL streaming, GPL-3.0." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://irlos.live/" />
+  <meta property="og:image" content="https://irlos.live/img/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #08080a;
+      --surface: #0e0e10;
+      --text: #e8e4da;
+      --muted: #948f86;
+      --dim: #6a655d;
+      --accent: #00d4ff;
+      --accent-dim: #0a6f85;
+      --live: #4ade80;
+      --rule: #1e1e20;
+      --rule-2: #2e2e31;
+      --max: 1080px;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --scanline: rgba(0, 212, 255, 0.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 15px;
+      line-height: 1.62;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: 0.22em; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .wrap { width: min(100% - 2.2rem, var(--max)); margin-inline: auto; }
+
+    .prose {
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 1.02rem; line-height: 1.7;
+      color: var(--muted); max-width: 60ch;
+    }
+    .prose strong { color: var(--text); font-weight: 500; }
+
+    /* ══ HERO / STARFIELD ══ */
+
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    #stars {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      display: block;
+      z-index: 0;
+    }
+
+    .hero-veil {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 50%, rgba(8,8,10,0.15), rgba(8,8,10,0.86) 72%),
+        linear-gradient(180deg, rgba(8,8,10,0.5), transparent 22%, transparent 72%, var(--bg));
+    }
+
+    .hero-inner { position: relative; z-index: 2; padding: 6rem 0 4.5rem; width: 100%; }
+
+    .hero-flag {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); border: 1px solid var(--rule-2);
+      background: rgba(8,8,10,0.6);
+      padding: 0.35rem 0.62rem; margin-bottom: 1.8rem;
+    }
+
+    .led {
+      width: 0.46rem; height: 0.46rem; border-radius: 50%;
+      background: var(--live);
+      animation: pulse 1.9s infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.45); }
+      70%  { box-shadow: 0 0 0 9px rgba(74,222,128,0); }
+      100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5.6vw, 3.9rem);
+      line-height: 1.0;
+      letter-spacing: -0.048em;
+      font-weight: 800;
+      text-transform: lowercase;
+      text-shadow: 0 2px 40px rgba(8,8,10,0.9);
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+
+    .hero .prose { margin-top: 1.5rem; }
+
+    .actions { margin-top: 2.2rem; display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center; }
+
+    .btn {
+      display: inline-block; font-family: var(--mono);
+      font-size: 0.78rem; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 700;
+      padding: 0.85rem 1.2rem;
+      border: 1px solid var(--accent); color: var(--accent);
+      background: rgba(8,8,10,0.35); cursor: pointer;
+      transition: background 110ms linear, color 110ms linear, box-shadow 160ms ease;
+    }
+    .btn:hover { background: var(--accent); color: #001016; text-decoration: none; }
+    .btn-solid { background: var(--accent); color: #001016; }
+    .btn-solid:hover { box-shadow: 0 0 34px -6px var(--accent); }
+    .btn-quiet { border-color: var(--rule-2); color: var(--text); }
+    .btn-quiet:hover { background: transparent; border-color: var(--accent); color: var(--accent); }
+
+    .note { font-size: 0.75rem; color: var(--dim); }
+
+    /* ══ METRICS ══ */
+
+    .metrics { border-bottom: 1px solid var(--rule); background: var(--surface); }
+    .metrics-row {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      width: min(100% - 2.2rem, var(--max)); margin-inline: auto;
+    }
+    .metric { padding: 1.7rem 0; border-right: 1px solid var(--rule); }
+    .metric:last-child { border-right: 0; }
+    .metric b {
+      display: block; font-size: clamp(1.4rem, 3.4vw, 2rem);
+      font-weight: 800; letter-spacing: -0.04em; color: var(--accent); line-height: 1;
+    }
+    .metric span {
+      display: block; margin-top: 0.5rem;
+      font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
+    }
+
+    /* ══ PROMPT SEPARATORS ══ */
+
+    .cmd {
+      padding: 4.4rem 0 1.8rem;
+      font-size: 0.85rem; color: var(--dim);
+    }
+    .cmd::before { content: "$ "; color: var(--accent); }
+    .cmd .u { color: var(--accent-dim); }
+    .cmd .c { color: var(--text); }
+
+    .out { border-left: 1px solid var(--rule-2); padding-left: 1.4rem; }
+
+    h2.h {
+      margin: 0 0 1rem;
+      font-size: 1.28rem; font-weight: 800;
+      letter-spacing: -0.03em; text-transform: lowercase;
+    }
+
+    /* ══ TERMINAL ══ */
+
+    .term {
+      border: 1px solid var(--rule-2); background: #0b0d0e;
+      position: relative; overflow-x: auto; overflow-y: hidden;
+    }
+    .term::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, var(--scanline) 4px);
+      opacity: 0.4;
+    }
+    .term-bar {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+      padding: 0.6rem 1rem; border-bottom: 1px solid var(--rule);
+      font-size: 0.65rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--dim);
+      position: sticky; left: 0;
+    }
+    .replay {
+      background: none; border: 1px solid var(--rule-2); color: var(--dim);
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 0.2rem 0.48rem; cursor: pointer;
+    }
+    .replay:hover { color: var(--accent); border-color: var(--accent-dim); }
+    .term-body { padding: 1rem 1.1rem 1.2rem; font-size: 0.78rem; line-height: 1.72; color: #cfe9f0; min-width: 40rem; }
+
+    .ln { opacity: 0; transform: translateY(2px); transition: opacity 200ms ease, transform 200ms ease; white-space: pre; }
+    .ln.on { opacity: 1; transform: none; }
+    .ln .t { color: #4a5a60; }
+    .ln .ok { color: var(--live); }
+    .ln .p { color: var(--accent); }
+    .ln.fin { color: var(--live); font-weight: 700; }
+
+    .cur { display: inline-block; width: 0.6ch; margin-left: 0.15ch; background: #eafcff; animation: blink 1s step-end infinite; vertical-align: -0.06em; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ══ CLIENTS ══ */
+
+    .who-row {
+      display: grid; grid-template-columns: 2.6rem minmax(8rem, 0.7fr) minmax(0, 1.6fr);
+      gap: 1rem; align-items: center;
+      padding: 1rem 0; border-bottom: 1px solid var(--rule);
+    }
+    .who-row:last-child { border-bottom: 0; }
+    .who-row img { width: 2.6rem; height: 2.6rem; border-radius: 50%; border: 1px solid var(--rule-2); background: #171719; object-fit: cover; }
+    .who-h { font-weight: 700; }
+    .who-h small { display: block; font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-top: 0.15rem; }
+    .who-row p { margin: 0; font-size: 0.84rem; color: var(--muted); }
+
+    /* ══ STEPS ══ */
+
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1.8rem; }
+    .step-n { color: var(--accent); font-size: 0.72rem; letter-spacing: 0.13em; margin-bottom: 0.7rem; }
+    .step h3 { margin: 0 0 0.4rem; font-size: 0.98rem; font-weight: 700; text-transform: lowercase; letter-spacing: -0.02em; }
+    .step p { margin: 0; font-size: 0.84rem; color: var(--muted); line-height: 1.62; }
+
+    /* ══ MANIFEST ══ */
+
+    .manifest { border: 1px solid var(--rule-2); }
+    .man-head, .man-row {
+      display: grid;
+      grid-template-columns: minmax(7rem, 0.9fr) minmax(5rem, 0.5fr) minmax(0, 2fr) minmax(8rem, 0.85fr);
+      gap: 1rem; padding: 0.85rem 1.1rem; align-items: baseline;
+    }
+    .man-head {
+      border-bottom: 1px solid var(--rule-2);
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--dim); background: var(--surface);
+    }
+    .man-row { border-bottom: 1px solid var(--rule); }
+    .man-row:last-child { border-bottom: 0; }
+    .man-row:hover { background: #0c0c0e; }
+    .pkg { font-weight: 700; letter-spacing: -0.01em; }
+    .pkg small { display: block; font-weight: 400; font-size: 0.66rem; color: var(--dim); letter-spacing: 0.07em; text-transform: uppercase; margin-top: 0.2rem; }
+    .cost { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.03em; white-space: nowrap; }
+    .cost .per { font-size: 0.66rem; font-weight: 400; color: var(--dim); }
+    .desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .desc ul { margin: 0.5rem 0 0; padding-left: 1.05rem; }
+    .desc li { margin-bottom: 0.18rem; }
+    .desc li::marker { color: var(--accent-dim); }
+    .act .btn { width: 100%; text-align: center; }
+    .sub-act { display: block; margin-top: 0.55rem; font-size: 0.66rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); text-align: center; }
+    .man-note { padding: 0.85rem 1.1rem; border-top: 1px solid var(--rule); font-size: 0.7rem; color: var(--dim); background: var(--surface); }
+
+    /* ══ SPECS ══ */
+
+    dl.spec { margin: 0; border: 1px solid var(--rule-2); }
+    .spec-r {
+      display: grid; grid-template-columns: minmax(8rem, 0.34fr) minmax(0, 1fr);
+      gap: 1.1rem; padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid var(--rule); align-items: baseline;
+    }
+    .spec-r:last-child { border-bottom: 0; }
+    .spec-r dt { font-size: 0.65rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--dim); }
+    .spec-r dd { margin: 0; font-size: 0.84rem; color: var(--muted); line-height: 1.6; }
+    .spec-r dd b { color: var(--text); font-weight: 500; }
+
+    /* ══ LICENSE ══ */
+
+    .lic { border: 1px solid var(--rule-2); padding: 1.6rem 1.5rem; background: var(--surface); }
+    .lic p { margin: 0 0 1rem; font-size: 0.9rem; line-height: 1.72; color: var(--text); max-width: 66ch; }
+    .lic p:last-of-type { margin-bottom: 0; }
+    .lic .k { color: var(--accent); }
+    .lic .sig { margin-top: 1.5rem; font-size: 0.74rem; color: var(--dim); }
+
+    /* ══ FOOTER ══ */
+
+    footer { margin-top: 5rem; border-top: 1px solid var(--rule); padding: 2rem 0 3rem; font-size: 0.75rem; color: var(--dim); }
+    .foot-row { display: flex; flex-wrap: wrap; gap: 0.8rem 1.5rem; align-items: center; }
+    .foot-row a { color: var(--muted); }
+    .foot-row a:hover { color: var(--accent); }
+    .foot-legal { margin-top: 1.1rem; line-height: 1.7; max-width: 70ch; }
+
+    /* ══ RESPONSIVE ══ */
+
+    @media (max-width: 900px) {
+      .man-head { display: none; }
+      .man-row { grid-template-columns: 1fr; gap: 0.7rem; padding: 1.3rem 1.1rem; }
+      .steps { grid-template-columns: 1fr; gap: 1.9rem; }
+      .cmd { padding-top: 3.4rem; }
+      .hero { min-height: 78vh; }
+    }
+
+    @media (max-width: 620px) {
+      body { font-size: 14px; }
+      .out { padding-left: 1rem; }
+      .metrics-row { grid-template-columns: 1fr; }
+      .metric { border-right: 0; border-bottom: 1px solid var(--rule); padding: 1.2rem 0; }
+      .metric:last-child { border-bottom: 0; }
+      .who-row { grid-template-columns: 2.4rem 1fr; row-gap: 0.5rem; }
+      .who-row p { grid-column: 2; }
+      .spec-r { grid-template-columns: 1fr; gap: 0.3rem; }
+      .cmd { font-size: 0.76rem; word-break: break-word; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      .ln { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <canvas id="stars" aria-hidden="true"></canvas>
+    <div class="hero-veil" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <div class="wrap">
+        <span class="hero-flag"><span class="led" aria-hidden="true"></span>live from streamer university</span>
+        <h1>click one button.<br /><em>go live anywhere.</em></h1>
+        <p class="prose">No tech headaches, no coding, no setup. The server and the backpack arrive working. All of it is <strong>GPL-3.0</strong>. The source is on GitHub and the license lets you do anything with it, including compete with me.</p>
+        <div class="actions">
+          <a class="btn btn-solid" id="goLive" href="#pkg">go live</a>
+          <a class="btn btn-quiet" href="https://github.com/EthanManners/Irlos" target="_blank" rel="noreferrer">read the source</a>
+          <span class="note">the .iso is free</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ METRICS ══ -->
+  <section class="metrics" aria-label="Track record">
+    <div class="metrics-row">
+      <div class="metric"><b>500+</b><span>streams served</span></div>
+      <div class="metric"><b>99.99%</b><span>relay uptime</span></div>
+    </div>
+  </section>
+
+  <main>
+
+    <!-- ══ CLIENTS ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos clients --live</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">who's running it</h2>
+
+        <!-- Avatars: copy from the old repo → assets/images/ -->
+        <div class="who-row">
+          <img src="img/adrian.jpeg" alt="" />
+          <div class="who-h">@Adrian2Original<small>irl</small></div>
+          <p>Bought the first backpack I built. Still streams on it.</p>
+        </div>
+        <div class="who-row">
+          <img src="img/will.jpg" alt="" />
+          <div class="who-h">@YaBoyyWill<small>irl</small></div>
+          <p>Streamed from Streamer University on IRLOS Cloud.</p>
+        </div>
+        <div class="who-row">
+          <img src="img/nick.jpg" alt="" />
+          <div class="who-h">@NickYardy<small>irl</small></div>
+          <p>Streams IRL full time on an IRLOS relay.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ BOOT ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">journalctl -u irlosd -f</span></div>
+    <section class="wrap">
+      <div class="term">
+        <div class="term-bar">
+          <span>cold boot to live</span>
+          <button class="replay" id="replay" type="button">replay</button>
+        </div>
+        <div class="term-body" id="termBody">
+<div class="ln"><span class="t">[  0.000]</span> irlosd 0.9.2 starting</div>
+<div class="ln"><span class="t">[  4.102]</span> modem0: sim present, registered on carrier</div>
+<div class="ln"><span class="t">[  6.351]</span> uplink: 22.4 mbit/s up, 41 ms rtt          <span class="ok">[ ok ]</span></div>
+<div class="ln"><span class="t">[  7.804]</span> encoder: h264 hardware, 1080p60            <span class="ok">[ ok ]</span></div>
+<div class="ln"><span class="t">[  9.117]</span> srt: handshake complete, relay connected   <span class="ok">[ ok ]</span></div>
+<div class="ln"><span class="t">[  9.902]</span> irlosd: idle, waiting on STREAM button</div>
+<div class="ln"> </div>
+<div class="ln"><span class="p">&gt;&gt;</span> gpio17: STREAM pressed</div>
+<div class="ln"><span class="t">[  0.418]</span> bitrate: adaptive 2500-6000 kbit/s</div>
+<div class="ln"><span class="t">[  0.607]</span> scene: live</div>
+<div class="ln"> </div>
+<div class="ln fin">● LIVE  1080p60 · 5800 kbit/s · 0 dropped frames<span class="cur" aria-hidden="true"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SETUP ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat SETUP.md</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">setup</h2>
+        <p class="prose" style="margin:0 0 2rem;">The bag ships assembled and flashed. You add a SIM and a camera.</p>
+        <div class="steps">
+          <article class="step">
+            <div class="step-n">01 /</div>
+            <h3>drop in a sim</h3>
+            <p>Any carrier, any prepaid data plan. The modem is inside the bag.</p>
+          </article>
+          <article class="step">
+            <div class="step-n">02 /</div>
+            <h3>enter your stream key</h3>
+            <p>First boot asks for your stream key and platform. It saves them and never asks again.</p>
+          </article>
+          <article class="step">
+            <div class="step-n">03 /</div>
+            <h3>press the button</h3>
+            <p>The button on the strap starts and stops the stream. When signal drops, bitrate drops with it and the stream stays up.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ PACKAGES ══ -->
+    <div class="wrap cmd" id="pkg"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos list --available</span></div>
+    <section class="wrap">
+      <div class="manifest">
+        <div class="man-head"><span>package</span><span>cost</span><span>contents</span><span>install</span></div>
+
+        <div class="man-row">
+          <div class="pkg">irlos-iso<small>self-host</small></div>
+          <div class="cost">free</div>
+          <div class="desc">
+            The full OS. Runs on your own hardware.
+            <ul>
+              <li>Bootable image</li>
+              <li>OBS, SRT/SLS, noalbs preconfigured</li>
+              <li>First-boot setup wizard</li>
+              <li>Community support</li>
+            </ul>
+          </div>
+          <div class="act">
+            <!-- TODO: real .iso URL -->
+            <a class="btn" href="#" data-sku="iso">download</a>
+            <span class="sub-act">1.8 gb · sha256</span>
+          </div>
+        </div>
+
+        <div class="man-row">
+          <div class="pkg">irlos-cloud<small>managed server</small></div>
+          <div class="cost">$30<span class="per">/mo</span></div>
+          <div class="desc">
+            Your own machine in the cloud, one button press from live. Provisioned the day you pay.
+            <ul>
+              <li>IrlosStudio with full scenes, sources and overlays</li>
+              <li>Web control panel, nothing to install</li>
+              <li>Dedicated SRT ingest, forward anywhere</li>
+              <li>Automatic bitrate management</li>
+              <li>Chat commands: start, stop, bitrate, scene</li>
+              <li>You email me when something breaks</li>
+            </ul>
+          </div>
+          <div class="act">
+            <!-- TODO: Stripe Payment Link -->
+            <a class="btn btn-solid" href="STRIPE_CLOUD_LINK" data-sku="cloud">subscribe</a>
+            <span class="sub-act">cancel any time</span>
+          </div>
+        </div>
+
+        <div class="man-row">
+          <div class="pkg">irlos-backpack<small>first run · limited</small></div>
+          <div class="cost">$1,000</div>
+          <div class="desc">
+            Assembled and tested before it ships. You add a SIM and a camera.
+            <ul>
+              <li>Orange Pi 5 Plus, hardware 1080p60 encode</li>
+              <li>Internal 4G modem and antennas</li>
+              <li>Swappable USB-C battery, certified pack</li>
+              <li>Physical STREAM button on the strap</li>
+              <li>Spare USB port for a second modem</li>
+              <li>3 months of irlos-cloud included</li>
+            </ul>
+          </div>
+          <div class="act">
+            <!-- TODO: Stripe Payment Links -->
+            <a class="btn btn-solid" href="STRIPE_BACKPACK_FULL_LINK" data-sku="backpack-full">buy</a>
+            <a class="sub-act" href="STRIPE_BACKPACK_DEPOSIT_LINK" data-sku="backpack-deposit">reserve · $99</a>
+          </div>
+        </div>
+
+        <div class="man-note">ships by <strong>SHIP_DATE</strong> · deposit refundable until your build starts · every package runs the same GPL-3.0 source</div>
+      </div>
+    </section>
+
+    <!-- ══ SPECS ══ -->
+    <div class="wrap cmd" id="spec"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat HONEST.txt</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">before you buy</h2>
+        <p class="prose" style="margin:0 0 1.7rem;">Short answers to the questions I get most.</p>
+
+        <dl class="spec">
+          <div class="spec-r">
+            <dt>who it's for</dt>
+            <dd>New IRL streamers who don't want to build a rig, and tinkerers who want one they can open up.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>connection</dt>
+            <dd><b>Single SIM, single modem.</b> The software supports a second USB modem for bonding if you add one later.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>not for</dt>
+            <dd>Multi-carrier bonding out of the box. If you need three carriers on day one, buy a pro rig instead.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>compute</dt>
+            <dd>Orange Pi 5 Plus · hardware h264 encode at 1080p60</dd>
+          </div>
+          <div class="spec-r">
+            <dt>power</dt>
+            <dd>USB-C PD battery pack, swappable mid-stream. Certified cells, not a homemade assembly.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>you supply</dt>
+            <dd>A SIM with a data plan, and a camera</dd>
+          </div>
+          <div class="spec-r">
+            <dt>license</dt>
+            <dd><b>GPL-3.0.</b> You're paying for assembly, hosting and support. The software is free for everyone, including people who never pay me.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ══ LICENSE ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat LICENSE.rationale</span></div>
+    <section class="wrap">
+      <div class="lic">
+        <p>SRT is <span class="k">GPL</span>. SLS is <span class="k">GPL</span>. noalbs is <span class="k">GPL</span>. OBS is <span class="k">GPL</span>. ffmpeg is <span class="k">LGPL</span>. The authors released these under copyleft specifically so the community could build on them freely. I'm continuing that tradition.</p>
+        <p>If you've been making money on top of this stack, good. So have I, and so will IRLOS users. The license you've been benefiting from grants the same freedoms to everyone.</p>
+        <div class="sig">ethan, irlos maintainer</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-row">
+        <span>irlos · gpl-3.0</span>
+        <a href="https://github.com/EthanManners/Irlos" target="_blank" rel="noreferrer">source</a>
+        <a href="https://github.com/EthanManners/Irlos" target="_blank" rel="noreferrer">docs</a>
+        <a href="mailto:CONTACT_EMAIL">contact</a>
+        <a href="/terms.html">terms</a>
+      </div>
+      <div class="foot-legal">
+        (c) 2026. copyleft, all wrongs reserved.<br />
+        Not affiliated with or endorsed by Streamer University, Twitch, Kick or YouTube. Product names belong to their owners.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  /* ── starfield ─────────────────────────────────────── */
+  (function () {
+    var cv = document.getElementById('stars');
+    var ctx = cv.getContext('2d');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var stars = [], W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var boost = 0, target = 0, raf = null;
+    var COUNT = 320;
+
+    function resize() {
+      var r = cv.getBoundingClientRect();
+      W = r.width; H = r.height;
+      cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function seed() {
+      stars = [];
+      for (var i = 0; i < COUNT; i++) {
+        stars.push({
+          x: (Math.random() - 0.5) * W * 1.6,
+          y: (Math.random() - 0.5) * H * 1.6,
+          z: Math.random() * W,
+          pz: 0
+        });
+      }
+    }
+
+    function recycle(s) {
+      s.x = (Math.random() - 0.5) * W * 1.6;
+      s.y = (Math.random() - 0.5) * H * 1.6;
+      s.z = W;
+      s.pz = s.z;
+    }
+
+    function paintStatic() {
+      ctx.fillStyle = '#08080a';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var k = W / s.z;
+        var sx = s.x * k + W / 2, sy = s.y * k + H / 2;
+        if (sx < 0 || sx > W || sy < 0 || sy > H) continue;
+        ctx.fillRect(sx, sy, Math.max(0.6, (1 - s.z / W) * 1.8), Math.max(0.6, (1 - s.z / W) * 1.8));
+      }
+    }
+
+    function frame() {
+      boost += (target - boost) * 0.045;
+      var speed = 1.9 + boost * 13;
+
+      ctx.fillStyle = 'rgba(8, 8, 10, 0.34)';
+      ctx.fillRect(0, 0, W, H);
+
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        s.pz = s.z;
+        s.z -= speed;
+        if (s.z < 1) { recycle(s); continue; }
+
+        var k = W / s.z, pk = W / s.pz;
+        var sx = s.x * k + W / 2, sy = s.y * k + H / 2;
+        var px = s.x * pk + W / 2, py = s.y * pk + H / 2;
+
+        if (sx < -60 || sx > W + 60 || sy < -60 || sy > H + 60) { recycle(s); continue; }
+
+        var d = 1 - s.z / W;
+        ctx.strokeStyle = 'rgba(255,255,255,' + (0.18 + d * 0.72).toFixed(3) + ')';
+        ctx.lineWidth = Math.max(0.5, d * 1.9);
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(sx, sy);
+        ctx.stroke();
+      }
+      raf = requestAnimationFrame(frame);
+    }
+
+    function start() { if (!raf && !reduced) raf = requestAnimationFrame(frame); }
+    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+    resize(); seed();
+    if (reduced) { paintStatic(); }
+    else {
+      ctx.fillStyle = '#08080a'; ctx.fillRect(0, 0, W, H);
+      start();
+    }
+
+    var rt;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () { resize(); seed(); if (reduced) paintStatic(); }, 150);
+    });
+
+    // hyperspace on the go-live button
+    var go = document.getElementById('goLive');
+    go.addEventListener('mouseenter', function () { target = 1; });
+    go.addEventListener('mouseleave', function () { target = 0; });
+    go.addEventListener('focus', function () { target = 1; });
+    go.addEventListener('blur', function () { target = 0; });
+
+    // don't burn cycles off-screen or in a background tab
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop(); else start();
+    });
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); });
+    }, { threshold: 0 }).observe(cv);
+  })();
+
+  /* ── boot log ──────────────────────────────────────── */
+  (function () {
+    var lines = [].slice.call(document.querySelectorAll('#termBody .ln'));
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var timers = [];
+
+    function play() {
+      timers.forEach(clearTimeout); timers = [];
+      if (reduced) { lines.forEach(function (l) { l.classList.add('on'); }); return; }
+      lines.forEach(function (l) { l.classList.remove('on'); });
+      var d = 0;
+      lines.forEach(function (line, i) {
+        d += (i === 7 || i === 11) ? 600 : 215;
+        timers.push(setTimeout(function () { line.classList.add('on'); }, d));
+      });
+    }
+
+    var fired = false;
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting && !fired) { fired = true; play(); } });
+    }, { threshold: 0.25 }).observe(document.getElementById('termBody'));
+
+    document.getElementById('replay').addEventListener('click', play);
+  })();
+  </script>
+</body>
+</html>

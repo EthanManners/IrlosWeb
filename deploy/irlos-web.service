@@ -1,0 +1,25 @@
+# /etc/systemd/system/irlos-web.service
+# Secrets live in /etc/irlos-web.env, mode 600, root owned. Never in the repo.
+[Unit]
+Description=irlos.live order server
+After=network.target
+
+[Service]
+Type=simple
+User=irlos
+Group=irlos
+WorkingDirectory=/opt/irlos-web
+ExecStart=/usr/bin/node server/index.js
+Restart=always
+RestartSec=2
+EnvironmentFile=/etc/irlos-web.env
+
+# the process only ever writes the SQLite database
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/irlos-web/data
+
+[Install]
+WantedBy=multi-user.target
