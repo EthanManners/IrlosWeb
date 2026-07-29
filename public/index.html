@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>irlos: click one button, go live anywhere</title>
+  <meta name="description" content="Click one button, go live anywhere. No tech headaches, no coding, no setup. Open source IRL streaming. GPL-3.0, full source, no lock-in." />
+
+  <meta property="og:title" content="irlos: click one button, go live anywhere" />
+  <meta property="og:description" content="No tech headaches, no coding, no setup. Open source IRL streaming, GPL-3.0." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://irlos.live/" />
+  <meta property="og:image" content="https://irlos.live/img/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/irlos.css" />
+</head>
+<body>
+
+  <div data-chrome="header"></div>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <canvas id="stars" aria-hidden="true"></canvas>
+    <div class="hero-veil" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <div class="wrap">
+        <span class="hero-flag"><span class="led" aria-hidden="true"></span>live from streamer university</span>
+        <h1>click one button.<br /><em>go live anywhere.</em></h1>
+        <p class="prose">No tech headaches, no coding, no setup. The server and the backpack arrive working. All of it is <strong>GPL-3.0</strong>. The source is on GitHub and the license lets you do anything with it, including compete with me.</p>
+        <div class="actions">
+          <a class="btn btn-solid" id="goLive" href="#pkg">go live</a>
+          <a class="btn btn-quiet" href="https://github.com/EthanManners/Irlos" target="_blank" rel="noreferrer">read the source</a>
+          <span class="note">the .iso is free</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ METRICS ══ -->
+  <section class="metrics" aria-label="Track record">
+    <div class="metrics-row">
+      <div class="metric"><b>500+</b><span>streams served</span></div>
+      <div class="metric"><b>99.99%</b><span>relay uptime</span></div>
+    </div>
+  </section>
+
+  <main id="main">
+
+    <!-- ══ CLIENTS ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos clients --live</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">who's running it</h2>
+
+        <div class="who-row">
+          <img src="/img/adrian.jpeg" alt="" />
+          <div class="who-h">@Adrian2Original<small>irl</small></div>
+          <p>Bought the first backpack I built. Still streams on it.</p>
+        </div>
+        <div class="who-row">
+          <img src="/img/will.jpg" alt="" />
+          <div class="who-h">@YaBoyyWill<small>irl</small></div>
+          <p>Streamed from Streamer University on IRLOS Cloud.</p>
+        </div>
+        <div class="who-row">
+          <img src="/img/nick.jpg" alt="" />
+          <div class="who-h">@NickYardy<small>irl</small></div>
+          <p>Streams IRL full time on an IRLOS relay.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ BOOT ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">journalctl -u irlosd -f</span></div>
+    <section class="wrap">
+      <div class="term">
+        <div class="term-bar">
+          <span>cold boot to live</span>
+          <button class="replay" id="replay" type="button">replay</button>
+        </div>
+        <div class="term-body" id="termBody">
+<div class="ln"><span class="t">[  0.000]</span> irlosd 0.9.2 starting</div>
+<div class="ln"><span class="t">[  4.102]</span> modem0: sim present, registered on carrier</div>
+<div class="ln"><span class="t">[  6.351]</span> uplink: 22.4 mbit/s up, 41 ms rtt          <span class="ok">[ ok ]</span></div>
+<div class="ln"><span class="t">[  7.804]</span> encoder: h264 hardware, 1080p60            <span class="ok">[ ok ]</span></div>
+<div class="ln"><span class="t">[  9.117]</span> srt: handshake complete, relay connected   <span class="ok">[ ok ]</span></div>
+<div class="ln"><span class="t">[  9.902]</span> irlosd: idle, waiting on STREAM button</div>
+<div class="ln"> </div>
+<div class="ln"><span class="p">&gt;&gt;</span> gpio17: STREAM pressed</div>
+<div class="ln"><span class="t">[  0.418]</span> bitrate: adaptive 2500-6000 kbit/s</div>
+<div class="ln"><span class="t">[  0.607]</span> scene: live</div>
+<div class="ln"> </div>
+<div class="ln fin">&#9679; LIVE  1080p60 &middot; 5800 kbit/s &middot; 0 dropped frames<span class="cur" aria-hidden="true"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SETUP ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat SETUP.md</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">setup</h2>
+        <p class="prose" style="margin:0 0 2rem;">The bag ships assembled and flashed. You add a SIM and a camera.</p>
+        <div class="steps">
+          <article class="step">
+            <div class="step-n">01 /</div>
+            <h3>drop in a sim</h3>
+            <p>Any carrier, any prepaid data plan. The modem is inside the bag.</p>
+          </article>
+          <article class="step">
+            <div class="step-n">02 /</div>
+            <h3>enter your stream key</h3>
+            <p>First boot asks for your stream key and platform. It saves them and never asks again.</p>
+          </article>
+          <article class="step">
+            <div class="step-n">03 /</div>
+            <h3>press the button</h3>
+            <p>The button on the strap starts and stops the stream. When signal drops, bitrate drops with it and the stream stays up.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ PACKAGES ══ -->
+    <div class="wrap cmd" id="pkg"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos list --available</span></div>
+    <section class="wrap">
+      <div class="manifest">
+        <div class="man-head"><span>package</span><span>cost</span><span>contents</span><span>install</span></div>
+
+        <div class="man-row">
+          <div class="pkg">irlos-iso<small>self-host</small></div>
+          <div class="cost">free</div>
+          <div class="desc">
+            The full OS. Runs on your own hardware.
+            <ul>
+              <li>Bootable image</li>
+              <li>OBS, SRT/SLS, noalbs preconfigured</li>
+              <li>First-boot setup wizard</li>
+              <li>Community support</li>
+            </ul>
+          </div>
+          <div class="act">
+            <a class="btn" href="/download.html" data-sku="iso">download</a>
+            <span class="sub-act">1.8 gb &middot; sha256</span>
+          </div>
+        </div>
+
+        <div class="man-row">
+          <div class="pkg">irlos-cloud<small>managed server</small></div>
+          <div class="cost">$30<span class="per">/mo</span></div>
+          <div class="desc">
+            Your own machine in the cloud, one button press from live. Provisioned the day you pay.
+            <ul>
+              <li>IrlosStudio with full scenes, sources and overlays</li>
+              <li>Web control panel, nothing to install</li>
+              <li>Dedicated SRT ingest, forward anywhere</li>
+              <li>Automatic bitrate management</li>
+              <li>Chat commands: start, stop, bitrate, scene</li>
+              <li>You email me when something breaks</li>
+            </ul>
+          </div>
+          <div class="act">
+            <a class="btn btn-solid" href="/cloud.html" data-checkout="cloud" data-sku="cloud">subscribe</a>
+            <span class="sub-act">cancel any time</span>
+          </div>
+        </div>
+
+        <div class="man-row">
+          <div class="pkg">irlos-backpack<small>first run &middot; limited</small></div>
+          <div class="cost">$1,000</div>
+          <div class="desc">
+            Assembled and tested before it ships. You add a SIM and a camera.
+            <ul>
+              <li>Orange Pi 5 Plus, hardware 1080p60 encode</li>
+              <li>Internal 4G modem and antennas</li>
+              <li>Swappable USB-C battery, certified pack</li>
+              <li>Physical STREAM button on the strap</li>
+              <li>Spare USB port for a second modem</li>
+              <li>3 months of irlos-cloud included</li>
+            </ul>
+          </div>
+          <div class="act">
+            <a class="btn btn-solid" href="/backpack.html" data-checkout="backpack-full" data-sku="backpack-full">buy</a>
+            <a class="sub-act" href="/backpack.html#deposit" data-sku="backpack-deposit">reserve &middot; $99</a>
+          </div>
+        </div>
+
+        <div class="man-note">ships by <strong data-ship-date>TBD</strong> &middot; <a href="/refunds.html">deposit refundable until your build starts</a> &middot; every package runs the same GPL-3.0 source</div>
+      </div>
+    </section>
+
+    <!-- ══ SPECS ══ -->
+    <div class="wrap cmd" id="spec"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat HONEST.txt</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">before you buy</h2>
+        <p class="prose" style="margin:0 0 1.7rem;">Short answers to the questions I get most.</p>
+
+        <dl class="spec">
+          <div class="spec-r">
+            <dt>who it's for</dt>
+            <dd>New IRL streamers who don't want to build a rig, and tinkerers who want one they can open up.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>connection</dt>
+            <dd><b>Single SIM, single modem.</b> The software supports a second USB modem for bonding if you add one later.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>not for</dt>
+            <dd>Multi-carrier bonding out of the box. If you need three carriers on day one, buy a pro rig instead.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>compute</dt>
+            <dd>Orange Pi 5 Plus &middot; hardware h264 encode at 1080p60</dd>
+          </div>
+          <div class="spec-r">
+            <dt>power</dt>
+            <dd>USB-C PD battery pack, swappable mid-stream. Certified cells, not a homemade assembly.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>you supply</dt>
+            <dd>A SIM with a data plan, and a camera</dd>
+          </div>
+          <div class="spec-r">
+            <dt>license</dt>
+            <dd><b>GPL-3.0.</b> You're paying for assembly, hosting and support. The software is free for everyone, including people who never pay me.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ══ LICENSE ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat LICENSE.rationale</span></div>
+    <section class="wrap">
+      <div class="lic">
+        <p>SRT is <span class="k">GPL</span>. SLS is <span class="k">GPL</span>. noalbs is <span class="k">GPL</span>. OBS is <span class="k">GPL</span>. ffmpeg is <span class="k">LGPL</span>. The authors released these under copyleft specifically so the community could build on them freely. I'm continuing that tradition.</p>
+        <p>If you've been making money on top of this stack, good. So have I, and so will IRLOS users. The license you've been benefiting from grants the same freedoms to everyone.</p>
+        <div class="sig">ethan, irlos maintainer</div>
+      </div>
+    </section>
+
+  </main>
+
+  <div data-chrome="footer"></div>
+
+  <script src="/js/chrome.js"></script>
+  <script src="/js/starfield.js"></script>
+  <script src="/js/bootlog.js"></script>
+  <script src="/js/checkout.js"></script>
+</body>
+</html>

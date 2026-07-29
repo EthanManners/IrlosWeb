@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>irlos: privacy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/irlos.css" />
+</head>
+<body>
+
+  <div data-chrome="header"></div>
+
+  <section class="page-head">
+    <div class="wrap">
+      <h1>privacy</h1>
+      <p class="prose">This site collects close to nothing. Here is the whole list.</p>
+    </div>
+  </section>
+
+  <main id="main">
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat PRIVACY.md</span></div>
+    <section class="wrap">
+      <div class="out">
+        <dl class="spec">
+          <div class="spec-r">
+            <dt>no tracking</dt>
+            <dd>No analytics, no ad pixels, no tracking cookies. The pages load fonts from Google Fonts, which sees your IP address when they load.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>when you buy</dt>
+            <dd>Stripe processes the payment and shares your email, the item and the amount with this site. That is stored in an order database and used to deliver what you bought and answer support email. Card numbers never touch this site.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>email</dt>
+            <dd>You get order confirmations and, for the backpack, ship updates. No marketing list. Replies go to me, not a ticket system.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>server logs</dt>
+            <dd>The web server keeps standard access logs, IP address and requested page, for debugging and abuse prevention. They rotate out on a schedule.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>deletion</dt>
+            <dd>Email me and I delete your order records, unless a payment dispute or tax law says they have to stay a while longer.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>third parties</dt>
+            <dd><a href="https://stripe.com/privacy" target="_blank" rel="noreferrer">Stripe</a> for payments and <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">Google</a> for fonts. That is the whole list.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <div data-chrome="footer"></div>
+
+  <script src="/js/chrome.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>irlos backpack: assembled and tested before it ships</title>
+  <meta name="description" content="The IRLOS backpack. Orange Pi 5 Plus, hardware 1080p60 encode, internal 4G modem, swappable USB-C battery, STREAM button on the strap. First production run, $1,000 or a $99 refundable deposit." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/irlos.css" />
+</head>
+<body>
+
+  <div data-chrome="header"></div>
+
+  <section class="page-head">
+    <div class="wrap">
+      <span class="flag">first run &middot; limited</span>
+      <h1>the <em>backpack</em></h1>
+      <p class="prose">A stream rig in a bag. Assembled, flashed and tested before it ships. You add a SIM and a camera, then press the button on the strap. This is the first production run and it is built to order: ships by <strong data-ship-date>TBD</strong>.</p>
+    </div>
+  </section>
+
+  <main id="main">
+
+    <!-- ══ MODEL ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos inspect backpack</span></div>
+
+    <section class="stage" id="stage" aria-label="Interactive schematic of the backpack internals">
+      <canvas id="scene"></canvas>
+      <div class="veil"></div>
+
+      <div class="hud">
+        <span><b>irlos-backpack</b>rev a . schematic</span>
+        <span class="ctl">
+          <button id="replay" type="button">replay</button>
+          <button id="toggle" type="button">close</button>
+          <button id="explode" type="button" aria-pressed="false">explode</button>
+        </span>
+      </div>
+
+      <div class="labels" id="labels"></div>
+
+      <div class="readout" id="readout">
+        <div class="rbar"><span id="rid">component</span><span>hover to inspect</span></div>
+        <div class="rbody">
+          <h3 id="rtitle"></h3>
+          <p id="rdesc"></p>
+          <dl id="rspec"></dl>
+        </div>
+      </div>
+
+      <div class="hint" id="hint">drag to rotate . hover a part</div>
+    </section>
+
+    <!-- no-JS fallback, regenerated from the same PARTS data by backpack3d.js -->
+    <section class="fallback">
+      <h2>what's inside</h2>
+      <dl id="bagDl">
+        <div><dt>compute</dt><dd>Orange Pi 5 Plus. Rockchip RK3588, 16GB RAM. Hardware h264 encode at 1080p60.</dd></div>
+        <div><dt>power</dt><dd>25,000mAh USB-C PD battery, 65W. Swappable mid-stream without dropping the feed.</dd></div>
+        <div><dt>modem</dt><dd>Internal 4G modem, single SIM, any carrier. A second USB port stays free for another modem.</dd></div>
+        <div><dt>antennas</dt><dd>Two external antennas routed up the shoulder straps.</dd></div>
+        <div><dt>storage</dt><dd>NVMe SSD. Records locally at full bitrate while the stream runs.</dd></div>
+        <div><dt>control</dt><dd>STREAM button on the left strap. One press starts, one press stops.</dd></div>
+      </dl>
+    </section>
+
+    <!-- ══ SPECS ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat HONEST.txt</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">before you buy</h2>
+        <dl class="spec">
+          <div class="spec-r">
+            <dt>connection</dt>
+            <dd><b>Single SIM, single modem.</b> The software supports a second USB modem for bonding if you add one later.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>not for</dt>
+            <dd>Multi-carrier bonding out of the box. If you need three carriers on day one, buy a pro rig instead.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>compute</dt>
+            <dd>Orange Pi 5 Plus &middot; hardware h264 encode at 1080p60</dd>
+          </div>
+          <div class="spec-r">
+            <dt>power</dt>
+            <dd>USB-C PD battery pack, swappable mid-stream. Certified cells, not a homemade assembly.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>you supply</dt>
+            <dd>A SIM with a data plan, and a camera</dd>
+          </div>
+          <div class="spec-r">
+            <dt>included</dt>
+            <dd>3 months of irlos-cloud</dd>
+          </div>
+          <div class="spec-r">
+            <dt>license</dt>
+            <dd><b>GPL-3.0.</b> You're paying for assembly, hosting and support. The software is free for everyone, including people who never pay me.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ══ TRACK RECORD ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos clients --backpack</span></div>
+    <section class="wrap">
+      <div class="out">
+        <div class="who-row">
+          <img src="/img/adrian.jpeg" alt="" />
+          <div class="who-h">@Adrian2Original<small>irl</small></div>
+          <p>Bought the first backpack I built. Still streams on it.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ BUY ══ -->
+    <div class="wrap cmd" id="buy"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos install irlos-backpack</span></div>
+    <section class="wrap">
+      <div class="manifest">
+        <div class="man-head"><span>package</span><span>cost</span><span>contents</span><span>install</span></div>
+
+        <div class="man-row">
+          <div class="pkg">irlos-backpack<small>first run &middot; limited</small></div>
+          <div class="cost">$1,000</div>
+          <div class="desc">
+            The whole bag, built to order. Ships by <strong data-ship-date>TBD</strong>.
+            <ul>
+              <li>Orange Pi 5 Plus, hardware 1080p60 encode</li>
+              <li>Internal 4G modem and antennas</li>
+              <li>Swappable USB-C battery, certified pack</li>
+              <li>Physical STREAM button on the strap</li>
+              <li>Spare USB port for a second modem</li>
+              <li>3 months of irlos-cloud included</li>
+            </ul>
+          </div>
+          <div class="act">
+            <button class="btn btn-solid" type="button" data-checkout="backpack-full">buy</button>
+            <span class="sub-act">ships by <span data-ship-date>TBD</span></span>
+          </div>
+        </div>
+
+        <div class="man-row" id="deposit">
+          <div class="pkg">irlos-backpack<small>deposit &middot; queue</small></div>
+          <div class="cost">$99</div>
+          <div class="desc">
+            Holds a numbered place in the build queue for the first production run.
+            <ul>
+              <li>Refundable until your build starts, no questions</li>
+              <li>Queue position emailed on payment</li>
+              <li>Ships by <span data-ship-date>TBD</span></li>
+            </ul>
+          </div>
+          <div class="act">
+            <button class="btn" type="button" data-checkout="backpack-deposit">reserve &middot; $99</button>
+            <a class="sub-act" href="/refunds.html">deposit terms</a>
+          </div>
+        </div>
+
+        <div class="man-note">ships by <strong data-ship-date>TBD</strong> &middot; <a href="/refunds.html">deposit refundable until your build starts</a> &middot; single SIM, single modem</div>
+      </div>
+    </section>
+
+  </main>
+
+  <div data-chrome="footer"></div>
+
+  <script src="/js/chrome.js"></script>
+  <script src="/vendor/three.min.js"></script>
+  <script src="/js/backpack3d.js"></script>
+  <script src="/js/checkout.js"></script>
+</body>
+</html>

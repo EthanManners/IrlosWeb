@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>irlos: download the iso</title>
+  <meta name="description" content="Download the IRLOS .iso free. The full OS: OBS, SRT/SLS and noalbs preconfigured, first-boot setup wizard. GPL-3.0, runs on your own hardware." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/irlos.css" />
+</head>
+<body>
+
+  <div data-chrome="header"></div>
+
+  <section class="page-head">
+    <div class="wrap">
+      <span class="flag">self-host &middot; free</span>
+      <h1>download the <em>iso</em></h1>
+      <p class="prose">The full OS. Runs on your own hardware. OBS, SRT/SLS and noalbs preconfigured, with a first-boot setup wizard. <strong>GPL-3.0</strong>, the same source every paid package runs.</p>
+    </div>
+  </section>
+
+  <main id="main">
+
+    <!-- ══ GET ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos fetch --latest</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">get it</h2>
+        <div class="actions" style="margin-top:0;">
+          <!-- open item: real release URL and hash, see README -->
+          <a class="btn btn-solid" href="ISO_URL" data-sku="iso">download .iso</a>
+          <span class="note">1.8 gb &middot; sha256 below</span>
+        </div>
+        <p class="prose" style="margin-top:1.6rem;">Verify the image before flashing:</p>
+        <div class="term" style="margin-top:0.8rem;">
+          <div class="term-bar"><span>checksum</span></div>
+          <div class="term-body" style="min-width:0;">
+<div class="ln on">$ sha256sum irlos.iso</div>
+<div class="ln on">ISO_SHA256  irlos.iso</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ FLASH ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat FLASH.md</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">flash it</h2>
+        <div class="steps">
+          <article class="step">
+            <div class="step-n">01 /</div>
+            <h3>write the image</h3>
+            <p>balenaEtcher works, so does dd: <br />dd if=irlos.iso of=/dev/sdX bs=4M status=progress</p>
+          </article>
+          <article class="step">
+            <div class="step-n">02 /</div>
+            <h3>boot the wizard</h3>
+            <p>First boot asks for your stream key and platform. It saves them and never asks again.</p>
+          </article>
+          <article class="step">
+            <div class="step-n">03 /</div>
+            <h3>go live</h3>
+            <p>When signal drops, bitrate drops with it and the stream stays up.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ HARDWARE ══ -->
+    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">cat HARDWARE.md</span></div>
+    <section class="wrap">
+      <div class="out">
+        <h2 class="h">hardware</h2>
+        <dl class="spec">
+          <div class="spec-r">
+            <dt>reference board</dt>
+            <dd><b>Orange Pi 5 Plus.</b> The board inside the backpack: hardware h264 encode at 1080p60.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>modems</dt>
+            <dd>Single SIM, single modem. The software supports a second USB modem for bonding if you add one.</dd>
+          </div>
+          <div class="spec-r">
+            <dt>everything else</dt>
+            <dd>The source is on <a href="https://github.com/EthanManners/Irlos" target="_blank" rel="noreferrer">GitHub</a>, and community support lives there. If your board can run it, the license lets you.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+  </main>
+
+  <div data-chrome="footer"></div>
+
+  <script src="/js/chrome.js"></script>
+</body>
+</html>
