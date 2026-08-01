@@ -64,16 +64,21 @@
           colorText: '#e8e4da',
           colorDanger: '#ff6b6b',
           fontFamily: '"JetBrains Mono", ui-monospace, monospace',
-          fontSizeBase: '14px',
+          fontSizeBase: '16px',
           borderRadius: '0',
           spacingUnit: '4px'
         },
         rules: {
-          '.Input': { border: '1px solid #2e2e31', boxShadow: 'none', backgroundColor: '#0b0d0e' },
-          '.Input:focus': { border: '1px solid #00d4ff', boxShadow: 'none' },
-          '.Label': { color: '#6a655d', fontSize: '11px', letterSpacing: '0.13em', textTransform: 'uppercase' },
-          '.Tab': { border: '1px solid #2e2e31', backgroundColor: '#0b0d0e' },
-          '.Tab--selected': { border: '1px solid #00d4ff', color: '#00d4ff' }
+          /* these mirror the email field in irlos.css: same border, same
+             fill, same focus ring, so our field and Stripe's look like one form */
+          '.Input': { border: '1px solid #3d3d42', boxShadow: 'none', backgroundColor: '#131519' },
+          '.Input:hover': { border: '1px solid #55555c' },
+          '.Input:focus': { border: '1px solid #00d4ff', boxShadow: '0 0 0 1px #00d4ff', backgroundColor: '#0b0d0e' },
+          '.Label': { color: '#948f86', fontSize: '11px', letterSpacing: '0.13em', textTransform: 'uppercase' },
+          '.Tab': { border: '1px solid #3d3d42', backgroundColor: '#131519' },
+          '.Tab:hover': { border: '1px solid #55555c' },
+          '.Tab--selected': { border: '1px solid #00d4ff', color: '#00d4ff' },
+          '.Error': { color: '#ff8080', fontSize: '12px' }
         }
       }
     });

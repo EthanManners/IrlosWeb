@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>irlos backpack: checkout</title>
+  <title>irlos backpack: order</title>
   <meta name="description" content="Order the IRLOS backpack. First production run, built to order." />
   <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,39 +15,52 @@
 
   <div data-chrome="header"></div>
 
+  <section class="page-head co-head">
+    <div class="wrap">
+      <span class="flag">first production run &middot; built to order</span>
+      <h1>order the <em>backpack</em></h1>
+      <p class="prose">A complete IRL streaming rig, assembled, flashed and tested before it ships. Add a SIM and a camera, press the button on the strap, and go live. Ships by <strong data-ship-date>TBD</strong>.</p>
+    </div>
+  </section>
+
   <main id="main">
-
-    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos install irlos-backpack</span></div>
-
     <section class="wrap co-wrap">
       <form class="co" id="payForm" novalidate>
 
         <div class="co-main">
-          <div class="co-field">
-            <label for="coEmail">email</label>
-            <input type="email" id="coEmail" name="email" autocomplete="email"
-                   inputmode="email" required placeholder="you@example.com" />
-            <p class="co-hint">The order confirmation and every shipping update go here.</p>
-          </div>
 
-          <div class="co-field">
-            <span class="co-label">shipping address</span>
-            <div id="addressElement"></div>
-          </div>
+          <section class="co-step">
+            <h2 class="co-step-h"><span class="co-n">01</span>contact</h2>
+            <div class="co-field">
+              <label for="coEmail">email address</label>
+              <input type="email" id="coEmail" name="email" autocomplete="email"
+                     inputmode="email" spellcheck="false" autocapitalize="off"
+                     required placeholder="you@example.com" />
+              <p class="co-hint">The order confirmation and every shipping update go here.</p>
+            </div>
+          </section>
 
-          <div class="co-field">
-            <span class="co-label">payment</span>
-            <div id="paymentElement"></div>
-          </div>
+          <section class="co-step">
+            <h2 class="co-step-h"><span class="co-n">02</span>shipping address</h2>
+            <div id="addressElement" class="co-mount"></div>
+          </section>
+
+          <section class="co-step">
+            <h2 class="co-step-h"><span class="co-n">03</span>payment</h2>
+            <div id="paymentElement" class="co-mount"></div>
+            <p class="co-secure">Card details go straight to Stripe and never touch this server.</p>
+          </section>
+
         </div>
 
         <aside class="co-side">
           <div class="co-summary">
-            <div class="co-sum-head">order</div>
+            <div class="co-sum-head">your order</div>
 
-            <div class="co-line">
-              <span class="co-line-name">irlos-backpack<small>first production run</small></span>
-              <span class="co-line-cost" data-price>$1,200</span>
+            <div class="co-item">
+              <h2 class="co-item-name">irlos-backpack</h2>
+              <p class="co-item-desc">The first fully open source streaming backpack. First production run, built one at a time.</p>
+              <div class="co-item-price"><span data-price>$1,200</span><small>one time</small></div>
             </div>
 
             <ul class="co-inc">
@@ -63,21 +76,19 @@
               <b data-price>$1,200</b>
             </div>
 
-            <p class="co-terms">
-              Built to order and shipped by <strong data-ship-date>TBD</strong>.
-              Cancel any time before it ships for a full refund:
-              <a href="/refunds/">refund terms</a>.
-            </p>
-
-            <button class="btn btn-solid co-pay" id="payBtn" type="submit" disabled>loading</button>
-            <p class="co-msg" id="payMsg" role="status" aria-live="polite"></p>
-            <p class="co-secure">Payment is processed by Stripe. Card details never touch this server.</p>
+            <div class="co-act">
+              <button class="btn btn-solid co-pay" id="payBtn" type="submit" disabled>loading</button>
+              <p class="co-msg" id="payMsg" role="status" aria-live="polite"></p>
+              <p class="co-terms">
+                Ships by <strong data-ship-date>TBD</strong>. Cancel any time before it
+                ships for a full refund: <a href="/refunds/">refund terms</a>.
+              </p>
+            </div>
           </div>
         </aside>
 
       </form>
     </section>
-
   </main>
 
   <div data-chrome="footer"></div>

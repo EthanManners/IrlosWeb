@@ -481,80 +481,133 @@ table.tbl { border-collapse: collapse; width: 100%; border: 1px solid var(--rule
 
 /* ══ CHECKOUT ══ */
 
-.co-wrap { padding-bottom: 4rem; }
+.co-head .flag { display: inline-block; }
+.co-head h1 em { font-style: normal; color: var(--accent); }
+.co-head .prose { max-width: 58ch; }
+
+.co-wrap { padding: 2.6rem 0 4.5rem; }
 
 .co {
-  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: clamp(1.6rem, 4vw, 3rem); align-items: start;
+  display: grid; grid-template-columns: minmax(0, 30rem) minmax(0, 22rem);
+  /* left edge lines up with the page heading above it */
+  justify-content: start;
+  gap: clamp(2rem, 5vw, 4rem); align-items: start;
 }
 
-.co-main { border-left: 1px solid var(--rule-2); padding-left: 1.4rem; }
+/* ── steps ── */
 
-.co-field { margin-bottom: 2rem; }
-.co-field:last-child { margin-bottom: 0; }
+.co-step { padding-bottom: 2.4rem; margin-bottom: 2.4rem; border-bottom: 1px solid var(--rule); }
+.co-step:last-child { padding-bottom: 0; margin-bottom: 0; border-bottom: 0; }
 
-.co-field label, .co-label {
-  display: block; margin-bottom: 0.6rem;
-  font-size: 0.65rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--dim);
+.co-step-h {
+  display: flex; align-items: baseline; gap: 0.8rem;
+  margin: 0 0 1.3rem;
+  font-size: 1.02rem; font-weight: 800;
+  letter-spacing: -0.02em; text-transform: lowercase;
+}
+.co-n {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+  color: var(--accent-dim);
+}
+
+/* Stripe renders into these. A min-height keeps the page from lurching when
+   the iframes finish loading. */
+.co-mount { min-height: 3.2rem; }
+
+/* ── email field ── */
+
+.co-field label {
+  display: block; margin-bottom: 0.55rem;
+  font-size: 0.66rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted);
 }
 
 .co-field input[type="email"] {
-  width: 100%; padding: 0.7rem 0.8rem;
-  font-family: var(--mono); font-size: 0.86rem;
-  color: var(--text); background: #0b0d0e;
-  border: 1px solid var(--rule-2); border-radius: 0;
+  display: block; width: 100%;
+  padding: 0.8rem 0.9rem;
+  font-family: var(--mono);
+  /* 16px: anything smaller makes iOS Safari zoom the page on focus */
+  font-size: 16px; line-height: 1.4;
+  color: var(--text);
+  background: #131519;
+  border: 1px solid #3d3d42; border-radius: 0;
+  transition: border-color 110ms linear, box-shadow 110ms linear;
 }
-.co-field input[type="email"]:focus { outline: none; border-color: var(--accent); }
+.co-field input[type="email"]::placeholder { color: #66615a; }
+.co-field input[type="email"]:hover { border-color: #55555c; }
+.co-field input[type="email"]:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent); background: #0b0d0e;
+}
 
-.co-hint { margin: 0.55rem 0 0; font-size: 0.72rem; color: var(--dim); }
+.co-hint { margin: 0.6rem 0 0; font-size: 0.74rem; color: var(--dim); line-height: 1.55; }
+
+/* ── order summary ── */
+
+.co-side { position: sticky; top: 1.6rem; }
 
 .co-summary { border: 1px solid var(--rule-2); background: var(--surface); }
 
 .co-sum-head {
-  padding: 0.7rem 1.1rem; border-bottom: 1px solid var(--rule-2);
-  font-size: 0.65rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--dim);
+  padding: 0.75rem 1.2rem; border-bottom: 1px solid var(--rule-2);
+  font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
 }
 
-.co-line {
-  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-  padding: 1.1rem 1.1rem 0.9rem;
+.co-item { padding: 1.4rem 1.2rem 1.2rem; }
+.co-item-name {
+  margin: 0; font-size: 1.32rem; font-weight: 800;
+  letter-spacing: -0.035em; text-transform: lowercase; line-height: 1.1;
 }
-.co-line-name { font-weight: 700; font-size: 0.9rem; }
-.co-line-name small {
-  display: block; margin-top: 0.2rem; font-weight: 400;
-  font-size: 0.66rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--dim);
+.co-item-desc {
+  margin: 0.6rem 0 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.86rem; line-height: 1.55; color: var(--muted);
 }
-.co-line-cost { font-weight: 800; letter-spacing: -0.03em; }
+.co-item-price {
+  display: flex; align-items: baseline; gap: 0.5rem; margin-top: 1rem;
+  font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; color: var(--accent);
+}
+.co-item-price small {
+  font-size: 0.62rem; font-weight: 400; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--dim);
+}
 
-.co-inc { margin: 0; padding: 0 1.1rem 1.1rem 2.2rem; font-size: 0.76rem; color: var(--muted); line-height: 1.7; }
+.co-inc {
+  margin: 0; padding: 0 1.2rem 1.3rem 2.3rem;
+  font-size: 0.76rem; color: var(--muted); line-height: 1.75;
+}
 .co-inc li::marker { color: var(--accent-dim); }
 
 .co-total {
   display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-  padding: 0.9rem 1.1rem;
+  padding: 0.95rem 1.2rem;
   border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-  font-size: 0.66rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--dim);
+  font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
 }
 .co-total b {
-  font-size: 1.35rem; font-weight: 800; letter-spacing: -0.04em;
-  text-transform: none; color: var(--accent);
+  font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em;
+  text-transform: none; color: var(--text);
 }
 
-.co-terms { margin: 0; padding: 1.1rem 1.1rem 0; font-size: 0.74rem; color: var(--muted); line-height: 1.6; }
-.co-terms strong { color: var(--text); font-weight: 500; }
+.co-act { padding: 1.2rem; }
 
-.co-pay { display: block; width: calc(100% - 2.2rem); margin: 1.1rem; }
-.co-pay:disabled { opacity: 0.45; cursor: not-allowed; }
-.co-pay:disabled:hover { box-shadow: none; }
+.co-pay { display: block; width: 100%; }
+.co-pay:disabled { opacity: 0.4; cursor: not-allowed; }
+.co-pay:disabled:hover { box-shadow: none; background: var(--accent); }
 
-.co-msg { margin: 0 1.1rem; font-size: 0.76rem; color: var(--muted); line-height: 1.55; }
+.co-msg { margin: 0.9rem 0 0; font-size: 0.76rem; color: var(--muted); line-height: 1.55; }
 .co-msg:empty { display: none; }
 .co-msg.is-error { color: #ff8080; }
 
-.co-secure { margin: 0.9rem 1.1rem 1.1rem; font-size: 0.68rem; color: var(--dim); line-height: 1.5; }
+.co-terms { margin: 0.9rem 0 0; font-size: 0.72rem; color: var(--dim); line-height: 1.6; }
+.co-terms strong { color: var(--muted); font-weight: 500; }
 
-@media (max-width: 860px) {
-  .co { grid-template-columns: 1fr; }
-  .co-main { order: 2; border-left: 0; padding-left: 0; }
-  .co-side { order: 1; }
+.co-secure { margin: 0.9rem 0 0; font-size: 0.72rem; color: var(--dim); line-height: 1.55; }
+
+@media (max-width: 880px) {
+  .co { grid-template-columns: 1fr; gap: 2.2rem; }
+  /* fields first, then the order review and the pay button. Putting the
+     summary on top would leave a buyer looking at a submit button before
+     there is anything to submit. */
+  .co-main { order: 1; }
+  .co-side { order: 2; position: static; }
 }
