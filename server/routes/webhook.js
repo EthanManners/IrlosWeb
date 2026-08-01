@@ -85,7 +85,7 @@ async function handleCompleted(session) {
       'I provision every cloud server by hand. Yours will be ready within 24 hours,',
       'and the connection details will land in this inbox.',
       '',
-      `Manage or cancel the subscription any time: ${SITE_URL}/cloud.html`,
+      `Manage or cancel the subscription any time: ${SITE_URL}/cloud/`,
       '',
       'ethan, irlos maintainer'
     ].join('\n');
@@ -97,7 +97,7 @@ async function handleCompleted(session) {
       'This is the first production run. Each bag is assembled and tested before',
       `it ships. Current ship window: ${ship}.`,
       '',
-      `Refund terms: ${SITE_URL}/refunds.html`,
+      `Refund terms: ${SITE_URL}/refunds/`,
       '',
       'ethan, irlos maintainer'
     ].join('\n');
@@ -110,7 +110,7 @@ async function handleCompleted(session) {
       `Current ship window: ${ship}.`,
       '',
       'The $99 is refundable until your build starts. Reply to this email and',
-      `it comes back, no questions. Terms: ${SITE_URL}/refunds.html`,
+      `it comes back, no questions. Terms: ${SITE_URL}/refunds/`,
       '',
       'ethan, irlos maintainer'
     ].join('\n');

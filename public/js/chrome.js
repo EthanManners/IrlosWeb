@@ -8,9 +8,9 @@
   var here = location.pathname;
 
   var NAV = [
-    ['/cloud.html', 'cloud'],
-    ['/backpack.html', 'backpack'],
-    ['/download.html', 'download'],
+    ['/cloud/', 'cloud'],
+    ['/backpack/', 'backpack'],
+    ['/download/', 'download'],
     [SOURCE, 'source']
   ];
 
@@ -40,9 +40,9 @@
       '<a href="' + SOURCE + '" target="_blank" rel="noreferrer">source</a>' +
       '<a href="' + SOURCE + '" target="_blank" rel="noreferrer">docs</a>' +
       '<a href="mailto:' + CONTACT + '">contact</a>' +
-      '<a href="/terms.html">terms</a>' +
-      '<a href="/refunds.html">refunds</a>' +
-      '<a href="/privacy.html">privacy</a>' +
+      '<a href="/terms/">terms</a>' +
+      '<a href="/refunds/">refunds</a>' +
+      '<a href="/privacy/">privacy</a>' +
       '</div>' +
       '<div class="foot-legal">' +
       '(c) 2026. copyleft, all wrongs reserved.<br />' +

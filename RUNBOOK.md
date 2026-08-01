@@ -85,7 +85,7 @@ server {
     server_name irlos.live www.irlos.live;
     root /opt/irlos-web/public;
     index index.html;
-    location / { try_files $uri $uri.html $uri/ =404; }
+    location / { try_files $uri $uri/ =404; }
 }
 EOF
 

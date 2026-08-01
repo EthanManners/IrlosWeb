@@ -48,8 +48,18 @@ app.use('/api', (req, res) => res.status(404).json({ error: 'not found' }));
 /* nginx serves public/ in production. Express serves it too so local dev
    needs nothing but this process. */
 const pub = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
-app.use(express.static(pub, { extensions: ['html'] }));
-app.use((req, res) => res.status(404).sendFile(path.join(pub, '404.html')));
+
+/* Every page is a directory with an index.html, so the URLs carry no
+   extension. Old .html links keep working, here and in deploy/nginx.conf. */
+app.use((req, res, next) => {
+  const m = /^\/(.+)\.html$/.exec(req.path);
+  if (!m) return next();
+  const slug = m[1].replace(/(^|\/)index$/, '');
+  res.redirect(301, slug ? `/${slug}/` : '/');
+});
+
+app.use(express.static(pub));
+app.use((req, res) => res.status(404).sendFile(path.join(pub, '404', 'index.html')));
 
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`irlos-web listening on 127.0.0.1:${PORT}`);

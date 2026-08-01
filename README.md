@@ -65,8 +65,8 @@ Point a production webhook endpoint (dashboard, `checkout.session.completed`) at
 
 1. **SHIP_DATE is unset.** Set the real ship window in `server/lib/config.js`. Every page and Checkout session renders it from there; until it is set, buy controls say TBD. Do not launch backpack sales without it: without a stated date the FTC Mail Order Rule defaults to 30 days.
 2. **Contact email.** `CONTACT` in `public/js/chrome.js` is a placeholder. Set the real address.
-3. **ISO release.** `public/download.html` has `ISO_URL` and `ISO_SHA256` placeholders for the real release link and checksum.
+3. **ISO release.** `public/download/index.html` has `ISO_URL` and `ISO_SHA256` placeholders for the real release link and checksum.
 4. **Images.** `public/img/` needs `adrian.jpeg`, `will.jpg`, `nick.jpg` (avatars from the old repo) and `og.jpg` for link previews. Client names stay only with written permission on file.
 5. **Backpack internals are an invented layout.** Positions, dimensions and explode vectors in the `PARTS` array in `public/js/backpack3d.js` must be corrected against the real build, and the component descriptions are placeholders to rewrite.
-6. **Policy copy review.** `terms.html` and `refunds.html` state conservative defaults (cancel before ship for full refund, subscription runs to period end). Confirm they match what you actually offer.
+6. **Policy copy review.** `/terms/` and `/refunds/` state conservative defaults (cancel before ship for full refund, subscription runs to period end). Confirm they match what you actually offer.
 7. **Real device pass.** Lighthouse 95+ on `/` and `/backpack`, and the backpack page held at 30fps on a mid-range Android. If it cannot, swap the canvas for a static render of the open state and keep the `<dl>`.

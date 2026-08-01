@@ -55,7 +55,7 @@
       } else if (o.sku === 'backpack-full') {
         html = 'Order received. Each bag is assembled and tested before it ships. Current ship window: <strong>' + o.shipDate + '</strong>. Updates come by email.';
       } else if (o.sku === 'backpack-deposit') {
-        html = 'Deposit received. You are <strong>number ' + o.queuePosition + '</strong> in the build queue. Current ship window: <strong>' + o.shipDate + '</strong>. The $99 is <a href="/refunds.html">refundable until your build starts</a>.';
+        html = 'Deposit received. You are <strong>number ' + o.queuePosition + '</strong> in the build queue. Current ship window: <strong>' + o.shipDate + '</strong>. The $99 is <a href="/refunds/">refundable until your build starts</a>.';
       }
       if (html) box.innerHTML = html;
     }).catch(function () {

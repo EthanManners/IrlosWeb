@@ -24,8 +24,8 @@ router.use('/portal', limiter);
 
 /* success_url keeps the literal {CHECKOUT_SESSION_ID} template, unencoded.
    Stripe substitutes it after payment. */
-const SUCCESS_URL = `${SITE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`;
-const CANCEL_URL = `${SITE_URL}/cancel.html`;
+const SUCCESS_URL = `${SITE_URL}/success/?session_id={CHECKOUT_SESSION_ID}`;
+const CANCEL_URL = `${SITE_URL}/cancel/`;
 
 router.post('/checkout/cloud', async (req, res) => {
   try {
@@ -58,8 +58,8 @@ router.post('/checkout/backpack', async (req, res) => {
   /* FTC Mail Order Rule: the ship window is stated inside Checkout, and the
      deposit's refund terms are stated with it. Both render from config. */
   const message = deposit
-    ? `Ships by ${shipDateText()}. The $99 deposit is refundable until your build starts. Terms: ${SITE_URL}/refunds.html`
-    : `First production run. Ships by ${shipDateText()}. Refund terms: ${SITE_URL}/refunds.html`;
+    ? `Ships by ${shipDateText()}. The $99 deposit is refundable until your build starts. Terms: ${SITE_URL}/refunds/`
+    : `First production run. Ships by ${shipDateText()}. Refund terms: ${SITE_URL}/refunds/`;
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -90,7 +90,7 @@ router.post('/portal', async (req, res) => {
   try {
     const portal = await stripe.billingPortal.sessions.create({
       customer: row.stripe_customer_id,
-      return_url: `${SITE_URL}/cloud.html`
+      return_url: `${SITE_URL}/cloud/`
     });
     res.json({ url: portal.url });
   } catch (err) {
