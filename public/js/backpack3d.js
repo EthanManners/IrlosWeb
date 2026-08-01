@@ -15,28 +15,28 @@
      invented layout and must be corrected against the real build before
      launch (see README open items). dt/dd feed the fallback <dl>. ── */
   var PARTS=[
-    { id:'pi', title:'Orange Pi 5 Plus', desc:'Runs IRLOS. Encodes 1080p60 in hardware, so the CPU stays free for everything else.',
+    { id:'pi', title:'Orange Pi 5 Plus', desc:'Runs IRLOS. Encodes 1080p60 in hardware, leaving the CPU free for everything else.',
       spec:[['soc','RK3588'],['ram','16GB'],['encode','h264 / hevc']],
       dt:'compute', dd:'Orange Pi 5 Plus. Rockchip RK3588, 16GB RAM. Hardware h264 encode at 1080p60.',
       geo:[1.55,0.10,1.05], pos:[0,0.62,-0.05], op:0.26, explode:[0,1.5,1.1], side:'r', lead:[1.05,0.08,0] },
-    { id:'bat', title:'25,000mAh battery', desc:'USB-C PD at 65W. Swap it mid-stream and the feed keeps running off the buffer.',
+    { id:'bat', title:'25,000mAh battery', desc:'USB-C PD at 65W. Swappable mid-stream: the stream keeps running off the buffer.',
       spec:[['out','65W PD'],['cells','certified'],['swap','hot']],
-      dt:'power', dd:'25,000mAh USB-C PD battery, 65W. Swappable mid-stream without dropping the feed.',
+      dt:'power', dd:'25,000mAh USB-C PD battery, 65W. Swappable mid-stream without dropping the stream.',
       geo:[1.70,0.72,0.85], pos:[0,-0.62,-0.05], op:0.19, explode:[0,-1.5,1.2], side:'l', lead:[-1.15,-0.05,0] },
-    { id:'modem', title:'4G modem', desc:'Single SIM, any carrier. The second USB port takes another modem if you want bonding later.',
-      spec:[['sim','1x nano'],['spare','1x usb'],['bond','supported']],
-      dt:'modem', dd:'Internal 4G modem, single SIM, any carrier. A second USB port stays free for another modem.',
+    { id:'modem', title:'4G modem', desc:'Internal, single SIM, any carrier. Routed to the antennas in the shoulder straps.',
+      spec:[['sim','1x nano'],['network','4g lte'],['carrier','any']],
+      dt:'modem', dd:'Internal 4G modem, single SIM, any carrier.',
       geo:[0.62,0.09,0.52], pos:[-0.62,0.20,-0.05], op:0.24, explode:[-1.6,0.3,0.9], side:'l', lead:[-0.55,0.08,0] },
-    { id:'ssd', title:'NVMe SSD', desc:'Records locally at full bitrate while you stream, so a dropped connection never costs you the footage.',
+    { id:'ssd', title:'NVMe SSD', desc:'Records locally at full bitrate while the stream runs, so a dropped connection never costs the footage.',
       spec:[['bus','pcie'],['use','local rec']],
       dt:'storage', dd:'NVMe SSD. Records locally at full bitrate while the stream runs.',
       geo:[0.52,0.06,0.34], pos:[0.62,0.20,-0.05], op:0.24, explode:[1.6,0.3,0.9], side:'r', lead:[0.5,0.08,0] }
   ];
-  var ANT={ id:'ant', title:'Antennas', desc:'Two externals routed up the straps. Keeps the radio out of the bag and off your back.',
+  var ANT={ id:'ant', title:'Antennas', desc:'Two external antennas routed up the shoulder straps, keeping the radios clear of the body.',
             spec:[['count','2x'],['route','strap']],
             dt:'antennas', dd:'Two external antennas routed up the shoulder straps.',
             side:'r', lead:[0.16,0.5,0] };
-  var BTNPART={ id:'btn', title:'STREAM button', desc:'One press goes live, one press stops. It is the only control you need while you are out.',
+  var BTNPART={ id:'btn', title:'STREAM button', desc:'One press goes live, one press stops. The only control needed in the field.',
             spec:[['gpio','17'],['action','start / stop']],
             dt:'control', dd:'STREAM button on the left strap. One press starts, one press stops.',
             side:'l', lead:[-0.3,0.16,-0.16] };
