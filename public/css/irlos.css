@@ -598,8 +598,26 @@ table.tbl { border-collapse: collapse; width: 100%; border: 1px solid var(--rule
 .co-msg:empty { display: none; }
 .co-msg.is-error { color: #ff8080; }
 
-.co-terms { margin: 0.9rem 0 0; font-size: 0.72rem; color: var(--dim); line-height: 1.6; }
-.co-terms strong { color: var(--muted); font-weight: 500; }
+/* the final-sale disclosure. Legible on purpose: this is the term a buyer is
+   most likely to argue about later, so it does not get to be fine print. */
+.co-final {
+  border: 1px solid var(--rule-2); background: #0b0d0e;
+  padding: 0.9rem 1rem; margin-bottom: 1rem;
+}
+.co-final p { margin: 0; font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+.co-final p + p { margin-top: 0.6rem; color: var(--dim); font-size: 0.74rem; }
+.co-final strong { color: var(--text); font-weight: 700; }
+
+.co-check {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  margin-bottom: 1rem; cursor: pointer;
+  font-size: 0.76rem; color: var(--muted); line-height: 1.5;
+}
+.co-check input {
+  flex: 0 0 auto; margin: 0.15rem 0 0;
+  width: 1rem; height: 1rem; accent-color: var(--accent);
+}
+.co-check.is-missing { color: #ff8080; }
 
 .co-secure { margin: 0.9rem 0 0; font-size: 0.72rem; color: var(--dim); line-height: 1.55; }
 

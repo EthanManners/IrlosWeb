@@ -61,9 +61,14 @@ router.post('/payment-intent', async (req, res) => {
       currency: price.currency,
       automatic_payment_methods: { enabled: true },
       /* FTC Mail Order Rule: the ship window is stated at the point of sale.
-         It is on the form, and it rides along on the charge itself. */
-      description: `irlos-backpack, first production run, ships by ${shipDateText()}`,
-      metadata: { sku: 'backpack-full', ship_window: shipDateText() }
+         The terms ride along on the charge itself too, so a dispute months
+         from now can be answered with the payment record alone. */
+      description: `irlos-backpack, first production run, built to order, final sale, ships by ${shipDateText()}`,
+      metadata: {
+        sku: 'backpack-full',
+        ship_window: shipDateText(),
+        terms: 'built to order, final sale, acknowledged at checkout'
+      }
     });
     res.json({
       clientSecret: intent.client_secret,

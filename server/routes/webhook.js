@@ -127,7 +127,11 @@ async function record(p) {
       'This is the first production run. Each bag is assembled and tested before',
       `it ships. Current ship window: ${ship}.`,
       '',
-      `Refund terms: ${SITE_URL}/refunds/`,
+      'Your bag is built to order, so this sale is final. If it has not shipped by',
+      'the window above you can cancel for a full refund, and anything that arrives',
+      'faulty gets repaired or replaced.',
+      '',
+      `Full terms: ${SITE_URL}/refunds/`,
       '',
       'ethan, irlos maintainer'
     ].join('\n');

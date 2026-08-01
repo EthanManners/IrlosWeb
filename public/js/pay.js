@@ -11,6 +11,7 @@
   var payBtn = document.getElementById('payBtn');
   var msg = document.getElementById('payMsg');
   var emailInput = document.getElementById('coEmail');
+  var finalCheck = document.getElementById('coFinal');
 
   var stripe, elements, ready = false;
 
@@ -62,6 +63,7 @@
           colorPrimary: '#00d4ff',
           colorBackground: '#0e0e10',
           colorText: '#e8e4da',
+          colorTextPlaceholder: '#66615a',
           colorDanger: '#ff6b6b',
           fontFamily: '"JetBrains Mono", ui-monospace, monospace',
           fontSizeBase: '16px',
@@ -117,6 +119,17 @@
       emailInput.focus();
       return;
     }
+
+    /* No charge is attempted until the buyer has acknowledged the sale is
+       final. The terms themselves are recorded on the PaymentIntent server
+       side, so the payment record in Stripe shows what was agreed to. */
+    if (finalCheck && !finalCheck.checked) {
+      finalCheck.parentNode.classList.add('is-missing');
+      say('Tick the box to confirm you understand the sale is final.', 'error');
+      finalCheck.focus();
+      return;
+    }
+    if (finalCheck) finalCheck.parentNode.classList.remove('is-missing');
 
     payBtn.disabled = true;
     payBtn.textContent = 'confirming';

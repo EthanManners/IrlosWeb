@@ -77,12 +77,18 @@
             </div>
 
             <div class="co-act">
+              <div class="co-final">
+                <p><strong>This sale is final.</strong> Your backpack is built to order and the parts are bought for your unit as soon as payment clears, so the order cannot be cancelled or refunded once placed.</p>
+                <p>Ships by <strong data-ship-date>TBD</strong>. If it has not shipped by then you can cancel for a full refund. Arrives faulty, it gets repaired or replaced. <a href="/refunds/">Full terms</a>.</p>
+              </div>
+
+              <label class="co-check">
+                <input type="checkbox" id="coFinal" name="final" required />
+                <span>I understand this backpack is built to order and my payment is final.</span>
+              </label>
+
               <button class="btn btn-solid co-pay" id="payBtn" type="submit" disabled>loading</button>
               <p class="co-msg" id="payMsg" role="status" aria-live="polite"></p>
-              <p class="co-terms">
-                Ships by <strong data-ship-date>TBD</strong>. Cancel any time before it
-                ships for a full refund: <a href="/refunds/">refund terms</a>.
-              </p>
             </div>
           </div>
         </aside>
