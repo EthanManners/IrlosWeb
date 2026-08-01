@@ -1,11 +1,12 @@
-/* sends buy clicks to the server, which owns every price.
-   Buttons carry data-checkout="cloud" | "backpack-full" | "backpack-deposit".
-   If the API call fails the anchor's href still works as a plain link. */
+/* Cloud subscriptions go through Stripe's hosted Checkout: buttons carry
+   data-checkout="cloud", and if the API call fails the anchor's href still
+   works as a plain link. The backpack is sold through /checkout/ instead,
+   which is a plain link and never reaches this file.
+
+   This also fills the order status on /success/ for both. */
 (function () {
   function endpoint(kind) {
     if (kind === 'cloud') return ['/api/checkout/cloud', {}];
-    if (kind === 'backpack-full') return ['/api/checkout/backpack', { variant: 'full' }];
-    if (kind === 'backpack-deposit') return ['/api/checkout/backpack', { variant: 'deposit' }];
     return null;
   }
 
@@ -38,10 +39,12 @@
     });
   });
 
-  // success page: the webhook can lag the redirect, so poll a few times
+  /* success page: hosted Checkout returns a session id, the site's own
+     checkout form returns a PaymentIntent id. Either identifies the order.
+     The webhook can lag the redirect, so poll a few times. */
   var box = document.getElementById('orderStatus');
   if (box) {
-    var m = location.search.match(/[?&]session_id=(cs_[A-Za-z0-9_]+)/);
+    var m = location.search.match(/[?&](?:session_id|payment_intent)=((?:cs|pi)_[A-Za-z0-9_]+)/);
     if (m) fill(m[1], 0);
   }
   function fill(id, attempt) {
@@ -51,15 +54,15 @@
     }).then(function (o) {
       var html = '';
       if (o.sku === 'cloud') {
-        html = 'Payment received. I provision every server by hand, within 24 hours of payment. Connection details arrive by email.';
+        html = 'Payment received. Every server is provisioned by hand, within 24 hours of payment. Connection details arrive by email.';
       } else if (o.sku === 'backpack-full') {
         html = 'Order received. Each bag is assembled and tested before it ships. Current ship window: <strong>' + o.shipDate + '</strong>. Updates come by email.';
-      } else if (o.sku === 'backpack-deposit') {
-        html = 'Deposit received. You are <strong>number ' + o.queuePosition + '</strong> in the build queue. Current ship window: <strong>' + o.shipDate + '</strong>. The $99 is <a href="/refunds/">refundable until your build starts</a>.';
       }
       if (html) box.innerHTML = html;
     }).catch(function () {
-      if (attempt < 3) setTimeout(function () { fill(id, attempt + 1); }, 1500);
+      /* Six tries at 1.5s covers a slow webhook without leaving the buyer
+         staring at a spinner. The confirmation email is the real receipt. */
+      if (attempt < 6) setTimeout(function () { fill(id, attempt + 1); }, 1500);
     });
   }
 

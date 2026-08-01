@@ -32,9 +32,7 @@ const stmt = {
     VALUES (@stripe_session_id, @stripe_customer_id, @sku, @amount_cents,
             @currency, @email, @queue_position, @status, @created_at)`),
   orderBySession: db.prepare('SELECT * FROM orders WHERE stripe_session_id = ?'),
-  maxQueuePosition: db.prepare("SELECT COALESCE(MAX(queue_position), 0) AS max FROM orders WHERE sku = 'backpack-deposit'"),
   allOrders: db.prepare('SELECT * FROM orders ORDER BY created_at DESC, id DESC'),
-  depositQueue: db.prepare("SELECT * FROM orders WHERE sku = 'backpack-deposit' AND status = 'paid' ORDER BY queue_position"),
   customerByEmail: db.prepare(`
     SELECT * FROM orders
     WHERE email = ? AND stripe_customer_id IS NOT NULL
@@ -51,22 +49,17 @@ export function allOrders() {
   return stmt.allOrders.all();
 }
 
-export function depositQueue() {
-  return stmt.depositQueue.all();
-}
-
 export function customerByEmail(email) {
   return stmt.customerByEmail.get(email);
 }
 
-/* Inserts an order, assigning the next queue position to deposits.
-   Runs in a transaction so two deposits cannot share a position. */
+/* stripe_session_id holds a Checkout session id for cloud and a PaymentIntent
+   id for the backpack. Either way it is the reference Stripe knows the payment
+   by, and the UNIQUE constraint is what makes webhook delivery idempotent.
+   queue_position is a leftover from the deposit queue: the column stays so the
+   existing table needs no migration, and nothing writes it any more. */
 export const insertOrder = db.transaction(function (order) {
-  let queue_position = null;
-  if (order.sku === 'backpack-deposit') {
-    queue_position = stmt.maxQueuePosition.get().max + 1;
-  }
-  stmt.insertOrder.run({ ...order, queue_position });
+  stmt.insertOrder.run({ ...order, queue_position: null });
   return stmt.orderBySession.get(order.stripe_session_id);
 });
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>irlos backpack: the first fully open source streaming backpack</title>
-  <meta name="description" content="The only IRL streaming backpack running open source software end to end. Orange Pi 5 Plus, hardware 1080p60 encode, internal 4G modem, swappable USB-C battery, STREAM button on the strap. First production run, $1,000 or a $99 refundable deposit." />
+  <meta name="description" content="The only IRL streaming backpack running open source software end to end. Orange Pi 5 Plus, hardware 1080p60 encode, internal 4G modem, swappable USB-C battery, STREAM button on the strap. First production run, $1,200, built to order." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
@@ -30,8 +30,8 @@
       <h1>the first fully open source<br /><em>streaming backpack.</em></h1>
       <p class="prose">IRLOS is the only IRL streaming backpack on the market running open source software end to end. Every unit arrives assembled, flashed and tested. Add a SIM and a camera, press the button on the strap, and go live.</p>
       <div class="actions">
-        <a class="btn btn-solid" href="#buy">buy &middot; $1,000</a>
-        <a class="btn btn-quiet" href="#deposit">reserve &middot; $99</a>
+        <a class="btn btn-solid" href="/checkout/">buy &middot; <span data-price>$1,200</span></a>
+        <a class="btn btn-quiet" href="#buy">what's in it</a>
         <span class="note">ships by <span data-ship-date>TBD</span></span>
       </div>
     </div>
@@ -159,7 +159,7 @@
 
         <div class="man-row">
           <div class="pkg">irlos-backpack<small>first run &middot; limited</small></div>
-          <div class="cost">$1,000</div>
+          <div class="cost" data-price>$1,200</div>
           <div class="desc">
             The complete rig, built to order. Ships by <strong data-ship-date>TBD</strong>.
             <ul>
@@ -171,29 +171,12 @@
             </ul>
           </div>
           <div class="act">
-            <button class="btn btn-solid" type="button" data-checkout="backpack-full">buy</button>
+            <a class="btn btn-solid" href="/checkout/">buy</a>
             <span class="sub-act">ships by <span data-ship-date>TBD</span></span>
           </div>
         </div>
 
-        <div class="man-row" id="deposit">
-          <div class="pkg">irlos-backpack<small>deposit &middot; queue</small></div>
-          <div class="cost">$99</div>
-          <div class="desc">
-            Holds a numbered place in the build queue for the first production run.
-            <ul>
-              <li>Refundable until your build starts</li>
-              <li>Queue position emailed on payment</li>
-              <li>Ships by <span data-ship-date>TBD</span></li>
-            </ul>
-          </div>
-          <div class="act">
-            <button class="btn" type="button" data-checkout="backpack-deposit">reserve &middot; $99</button>
-            <a class="sub-act" href="/refunds/">deposit terms</a>
-          </div>
-        </div>
-
-        <div class="man-note">ships by <strong data-ship-date>TBD</strong> &middot; <a href="/refunds/">deposit refundable until your build starts</a> &middot; GPL-3.0, full source included</div>
+        <div class="man-note">ships by <strong data-ship-date>TBD</strong> &middot; <a href="/refunds/">full refund any time before it ships</a> &middot; GPL-3.0, full source included</div>
       </div>
     </section>
 

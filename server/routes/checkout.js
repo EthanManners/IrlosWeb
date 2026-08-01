@@ -2,11 +2,11 @@ import { Router } from 'express';
 import Stripe from 'stripe';
 import rateLimit from 'express-rate-limit';
 import {
-  STRIPE_SECRET_KEY, STRIPE_PRICE_CLOUD,
-  STRIPE_PRICE_BACKPACK_FULL, STRIPE_PRICE_BACKPACK_DEPOSIT,
+  STRIPE_SECRET_KEY, STRIPE_PRICE_CLOUD, STRIPE_PRICE_BACKPACK_FULL,
   SITE_URL, shipDateText
 } from '../lib/config.js';
 import { orderBySession, customerByEmail } from '../lib/db.js';
+import { backpackPrice } from '../lib/price.js';
 
 /* apiVersion pinned on purpose: an unpinned SDK changes behaviour on deploy */
 const stripe = new Stripe(STRIPE_SECRET_KEY || 'sk_unset', { apiVersion: '2024-06-20' });
@@ -20,6 +20,7 @@ const limiter = rateLimit({
   legacyHeaders: false
 });
 router.use('/checkout', limiter);
+router.use('/payment-intent', limiter);
 router.use('/portal', limiter);
 
 /* success_url keeps the literal {CHECKOUT_SESSION_ID} template, unencoded.
@@ -49,32 +50,30 @@ router.post('/checkout/cloud', async (req, res) => {
   }
 });
 
-router.post('/checkout/backpack', async (req, res) => {
-  const variant = req.body && req.body.variant;
-  if (variant !== 'full' && variant !== 'deposit') {
-    return res.status(400).json({ error: 'variant must be full or deposit' });
-  }
-  const deposit = variant === 'deposit';
-  /* FTC Mail Order Rule: the ship window is stated inside Checkout, and the
-     deposit's refund terms are stated with it. Both render from config. */
-  const message = deposit
-    ? `Ships by ${shipDateText()}. The $99 deposit is refundable until your build starts. Terms: ${SITE_URL}/refunds/`
-    : `First production run. Ships by ${shipDateText()}. Refund terms: ${SITE_URL}/refunds/`;
+/* The backpack is sold through the site's own checkout form, so it needs a
+   PaymentIntent rather than a hosted Checkout session. The amount is read from
+   the Stripe price here and never accepted from the client. */
+router.post('/payment-intent', async (req, res) => {
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [{
-        price: deposit ? STRIPE_PRICE_BACKPACK_DEPOSIT : STRIPE_PRICE_BACKPACK_FULL,
-        quantity: 1
-      }],
-      success_url: SUCCESS_URL,
-      cancel_url: CANCEL_URL,
-      metadata: { sku: deposit ? 'backpack-deposit' : 'backpack-full' },
-      custom_text: { submit: { message } }
+    const price = await backpackPrice();
+    const intent = await stripe.paymentIntents.create({
+      amount: price.amount,
+      currency: price.currency,
+      automatic_payment_methods: { enabled: true },
+      /* FTC Mail Order Rule: the ship window is stated at the point of sale.
+         It is on the form, and it rides along on the charge itself. */
+      description: `irlos-backpack, first production run, ships by ${shipDateText()}`,
+      metadata: { sku: 'backpack-full', ship_window: shipDateText() }
     });
-    res.json({ url: session.url });
+    res.json({
+      clientSecret: intent.client_secret,
+      amount: price.amount,
+      currency: price.currency,
+      display: price.display,
+      shipDate: shipDateText()
+    });
   } catch (err) {
-    console.error('[checkout/backpack]', err.message);
+    console.error('[payment-intent]', err.message);
     res.status(502).json({ error: 'could not start checkout' });
   }
 });
@@ -99,17 +98,17 @@ router.post('/portal', async (req, res) => {
   }
 });
 
-/* Purchase summary for /success. Nothing beyond the SKU, status, queue
-   position and ship window leaves the server. */
-router.get('/order/:session_id', (req, res) => {
-  const id = req.params.session_id;
-  if (!/^cs_[a-zA-Z0-9_]+$/.test(id)) return res.status(400).json({ error: 'bad session id' });
+/* Purchase summary for /success. Nothing beyond the SKU, status and ship
+   window leaves the server. Cloud orders are keyed by Checkout session,
+   backpack orders by PaymentIntent. */
+router.get('/order/:ref', (req, res) => {
+  const id = req.params.ref;
+  if (!/^(cs|pi)_[a-zA-Z0-9_]+$/.test(id)) return res.status(400).json({ error: 'bad reference' });
   const row = orderBySession(id);
   if (!row) return res.status(404).json({ error: 'order not found' });
   res.json({
     sku: row.sku,
     status: row.status,
-    queuePosition: row.queue_position,
     shipDate: shipDateText()
   });
 });

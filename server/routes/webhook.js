@@ -30,9 +30,16 @@ router.post('/', async (req, res) => {
     return res.json({ received: true, duplicate: true });
   }
 
-  if (event.type === 'checkout.session.completed') {
+  /* Cloud is a subscription bought through hosted Checkout. The backpack is
+     bought through the site's own form, which produces a PaymentIntent and no
+     session at all. Both end here and become one order row. */
+  const handler = event.type === 'checkout.session.completed' ? handleSession
+    : event.type === 'payment_intent.succeeded' ? handleIntent
+      : null;
+
+  if (handler) {
     try {
-      await handleCompleted(event.data.object);
+      await handler(event.data.object);
     } catch (err) {
       console.error('[webhook] processing failed:', err.message);
       /* 500 so Stripe retries. Unmark the event or the retry would be
@@ -49,27 +56,50 @@ function unmarkEvent(id) {
   db.prepare('DELETE FROM webhook_events WHERE id = ?').run(id);
 }
 
-async function handleCompleted(session) {
-  const sku = (session.metadata && session.metadata.sku) || 'unknown';
-  const email = (session.customer_details && session.customer_details.email) || '';
+function handleSession(session) {
+  return record({
+    ref: session.id,
+    customer: session.customer || null,
+    sku: (session.metadata && session.metadata.sku) || 'unknown',
+    amount: session.amount_total ?? 0,
+    currency: session.currency || 'usd',
+    email: (session.customer_details && session.customer_details.email) || '',
+    status: session.payment_status || 'paid'
+  });
+}
+
+function handleIntent(intent) {
+  return record({
+    ref: intent.id,
+    customer: typeof intent.customer === 'string' ? intent.customer : null,
+    sku: (intent.metadata && intent.metadata.sku) || 'unknown',
+    amount: intent.amount_received ?? intent.amount ?? 0,
+    currency: intent.currency || 'usd',
+    email: intent.receipt_email || '',
+    status: 'paid'
+  });
+}
+
+async function record(p) {
+  const sku = p.sku;
+  const email = p.email;
 
   /* Two deliveries can race past the duplicate check before either inserts.
      The UNIQUE constraint on stripe_session_id makes the second a no-op. */
-  let order;
   try {
-    order = insertOrder({
-      stripe_session_id: session.id,
-      stripe_customer_id: session.customer || null,
+    insertOrder({
+      stripe_session_id: p.ref,
+      stripe_customer_id: p.customer,
       sku,
-      amount_cents: session.amount_total ?? 0,
-      currency: session.currency || 'usd',
+      amount_cents: p.amount,
+      currency: p.currency,
       email,
-      status: session.payment_status || 'paid',
+      status: p.status,
       created_at: new Date().toISOString()
     });
   } catch (err) {
     if (String(err.code).startsWith('SQLITE_CONSTRAINT')) {
-      console.warn('[webhook] order already stored for', session.id);
+      console.warn('[webhook] order already stored for', p.ref);
       return;
     }
     throw err;
@@ -101,19 +131,6 @@ async function handleCompleted(session) {
       '',
       'ethan, irlos maintainer'
     ].join('\n');
-  } else if (sku === 'backpack-deposit') {
-    subject = `irlos-backpack: deposit received, you are number ${order.queue_position} in the queue`;
-    body = [
-      'Deposit received. Thanks.',
-      '',
-      `You are number ${order.queue_position} in the build queue.`,
-      `Current ship window: ${ship}.`,
-      '',
-      'The $99 is refundable until your build starts. Reply to this email and',
-      `it comes back, no questions. Terms: ${SITE_URL}/refunds/`,
-      '',
-      'ethan, irlos maintainer'
-    ].join('\n');
   } else {
     subject = 'irlos: payment received';
     body = 'Payment received. Thanks.';
@@ -125,11 +142,11 @@ async function handleCompleted(session) {
   const alert = [
     `sku: ${sku}`,
     `email: ${email}`,
-    `amount: ${((session.amount_total ?? 0) / 100).toFixed(2)} ${(session.currency || 'usd').toUpperCase()}`,
-    `session: ${session.id}`,
-    order.queue_position ? `queue position: ${order.queue_position}` : null,
+    `amount: ${(p.amount / 100).toFixed(2)} ${p.currency.toUpperCase()}`,
+    `reference: ${p.ref}`,
     sku === 'cloud' ? '' : null,
-    sku === 'cloud' ? 'ACTION: provision this server within 24 hours.' : null
+    sku === 'cloud' ? 'ACTION: provision this server within 24 hours.' : null,
+    sku === 'backpack-full' ? 'ACTION: shipping address is on the payment in Stripe.' : null
   ].filter((l) => l !== null).join('\n');
   await mailOperator(`[irlos] ${sku} purchase: ${email}`, alert);
 }

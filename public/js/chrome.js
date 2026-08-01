@@ -52,11 +52,15 @@
       '</div></footer>';
   }
 
-  var slots = document.querySelectorAll('[data-ship-date]');
-  if (slots.length) {
+  /* The ship date and the price each have one source: config.js and the Stripe
+     price object. The markup carries a fallback for when this call fails. */
+  var dates = document.querySelectorAll('[data-ship-date]');
+  var prices = document.querySelectorAll('[data-price]');
+  if (dates.length || prices.length) {
     fetch('/api/config').then(function (r) { return r.json(); }).then(function (c) {
-      if (!c || !c.shipDate) return;
-      [].forEach.call(slots, function (el) { el.textContent = c.shipDate; });
+      if (!c) return;
+      if (c.shipDate) [].forEach.call(dates, function (el) { el.textContent = c.shipDate; });
+      if (c.price) [].forEach.call(prices, function (el) { el.textContent = c.price; });
     }).catch(function () {});
   }
 })();

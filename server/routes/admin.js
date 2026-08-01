@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { timingSafeEqual, createHash } from 'node:crypto';
 import { ADMIN_USER, ADMIN_PASS, shipDateText } from '../lib/config.js';
-import { allOrders, depositQueue } from '../lib/db.js';
+import { allOrders } from '../lib/db.js';
 
 const router = Router();
 
@@ -44,7 +44,6 @@ function money(cents, currency) {
 /* Server-rendered on purpose: no scripts, nothing to break, reload to refresh. */
 router.get('/', (req, res) => {
   const orders = allOrders();
-  const queue = depositQueue();
 
   const orderRows = orders.map((o) => `
     <tr>
@@ -54,15 +53,7 @@ router.get('/', (req, res) => {
       <td>${esc(o.email)}</td>
       <td>${esc(money(o.amount_cents, o.currency))}</td>
       <td>${esc(o.status)}</td>
-      <td>${o.queue_position ?? ''}</td>
       <td class="mono">${esc(o.stripe_session_id)}</td>
-    </tr>`).join('');
-
-  const queueRows = queue.map((o) => `
-    <tr>
-      <td>#${o.queue_position}</td>
-      <td>${esc(o.email)}</td>
-      <td>${esc(o.created_at.slice(0, 10))}</td>
     </tr>`).join('');
 
   res.send(`<!DOCTYPE html>
@@ -78,23 +69,16 @@ router.get('/', (req, res) => {
   <section class="page-head">
     <div class="wrap">
       <h1>admin</h1>
-      <p class="prose">${orders.length} orders &middot; ${queue.length} deposits in queue &middot; ship window: ${esc(shipDateText())}</p>
+      <p class="prose">${orders.length} orders &middot; ship window: ${esc(shipDateText())}</p>
     </div>
   </section>
   <main id="main">
-    <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos orders --deposit-queue</span></div>
-    <section class="wrap">
-      <div class="out">
-        <h2 class="h">deposit queue</h2>
-        ${queue.length ? `<table class="tbl"><thead><tr><th>position</th><th>email</th><th>paid</th></tr></thead><tbody>${queueRows}</tbody></table>` : '<p class="prose">Empty.</p>'}
-      </div>
-    </section>
     <div class="wrap cmd"><span class="u">user@irlos</span>:<span class="c">~</span>$ <span class="c">irlos orders --all</span></div>
     <section class="wrap">
       <div class="out">
         <h2 class="h">orders</h2>
         <p class="prose" style="margin:0 0 1rem;"><a href="/admin/orders.csv">export csv</a></p>
-        ${orders.length ? `<table class="tbl"><thead><tr><th>id</th><th>created</th><th>sku</th><th>email</th><th>amount</th><th>status</th><th>queue</th><th>session</th></tr></thead><tbody>${orderRows}</tbody></table>` : '<p class="prose">No orders yet.</p>'}
+        ${orders.length ? `<table class="tbl"><thead><tr><th>id</th><th>created</th><th>sku</th><th>email</th><th>amount</th><th>status</th><th>reference</th></tr></thead><tbody>${orderRows}</tbody></table>` : '<p class="prose">No orders yet.</p>'}
       </div>
     </section>
   </main>
@@ -104,7 +88,7 @@ router.get('/', (req, res) => {
 
 router.get('/orders.csv', (req, res) => {
   const cols = ['id', 'created_at', 'sku', 'email', 'amount_cents', 'currency',
-    'status', 'queue_position', 'stripe_session_id', 'stripe_customer_id'];
+    'status', 'stripe_session_id', 'stripe_customer_id'];
   const cell = (v) => {
     const s = String(v ?? '');
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
