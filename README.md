@@ -7,6 +7,7 @@ The production site for [irlos.live](https://irlos.live): static pages served by
 ```
 public/     static site: html, css, js, vendored three.js
 server/     express app on 127.0.0.1:8787, /api and /admin
+server/tts/ the chat reader: paced mixer, mp3 encoder, listener fan-out
 deploy/     systemd unit and nginx config
 reference/  the design drafts the site was built from
 ```
@@ -40,6 +41,147 @@ stripe listen --forward-to localhost:8787/api/webhook
 `stripe listen` prints a `whsec_...` secret. That is your `STRIPE_WEBHOOK_SECRET` for local dev. Pay with card `4242 4242 4242 4242` and watch the webhook return 200, the order land in `data/irlos.db`, and both emails go out (needs a local SMTP listener, or read the `[mail]` log lines).
 
 The Billing Portal needs its configuration saved once in the Stripe dashboard (Settings, Billing Portal) or `/api/portal` will 400.
+
+## chat reader (`/tts`)
+
+Reads a Kick channel's chat aloud at `/tts`, as one continuous MP3 stream so it
+survives an iPhone locking. Routes:
+
+```
+GET  /tts                     the page
+GET  /tts/stream/:slug.mp3    the audio
+GET  /tts/api/status/:slug    session state
+GET  /tts/api/capacity/:slug  whether that channel would be refused a session
+POST /tts/api/skip/:slug      skip the current utterance
+```
+
+It is a stream rather than a series of clips because iOS Safari suspends Web
+Audio, Web Speech and any JS that would advance a playlist the moment the
+screen locks. One `<audio>` element on an unbroken stream started by a tap is
+the only thing that keeps running, so the server emits a timeline that never
+ends and never gaps, dead chat included.
+
+A session is one channel: a Kick websocket, a message queue, a long-lived
+speech child, a mixer paced to a self-correcting 20ms deadline, an ffmpeg
+encoder, and the set of responses being written to. It is built on the first
+listener and dropped five minutes after the last one leaves.
+
+The mixer and encoder start before the chatroom is even looked up. A bad
+channel name, a Cloudflare challenge or a dead websocket all show up as silence
+on a stream that is still running, never as a stream that fails to start: a
+phone that is already playing keeps playing, and one that never started cannot
+be restarted without another tap.
+
+Messages are queued five deep, oldest dropped, so a busy channel stays current
+rather than narrating the past. Bot commands, links and repeated text are
+dropped, emotes read as their name, and each user gets three lines per thirty
+seconds. Chat is read verbatim otherwise: there is no language filter, and
+adding one would be a wordlist in `server/tts/queue.js`.
+
+### the voice
+
+**piper** with the **hfc_female medium** voice, which is a neural model and
+sounds like a current screen reader rather than the 1990s concatenative sound
+of the mbrola voices it replaced. Not packaged: it is the standalone
+`2023.11.14` release, unpacked whole into `/opt/piper`, with the voice beside
+it.
+
+```
+mkdir -p /opt/piper/voices
+curl -L https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz \
+  | tar xz -C /opt
+curl -L -o /opt/piper/voices/en_US-hfc_female-medium.onnx \
+  https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc_female/medium/en_US-hfc_female-medium.onnx
+curl -L -o /opt/piper/voices/en_US-hfc_female-medium.onnx.json \
+  https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc_female/medium/en_US-hfc_female-medium.onnx.json
+apt install ffmpeg
+```
+
+Unpack it whole and leave it there. The binary finds its bundled onnxruntime
+and `espeak-ng-data` through an `$ORIGIN` runpath, so copying `piper` out on
+its own gives a binary that will not start. `PIPER_BIN` and `PIPER_MODEL`
+default to those paths, so the box needs no environment for this; a dev machine
+that installs elsewhere sets both in `.env`.
+
+Measured on the box, which is one core and 969MB shared with two other sites:
+**1.4s to load the model, then a real-time factor of 0.50**, 143MB resident
+warm and 226MB at the peak of loading. That is comfortable for one session and
+nothing like comfortable for two, so `TTS_MAX_SESSIONS` defaults to **1** under
+piper and 8 under espeak. It caps concurrent *channels*; listeners on one
+channel share its session and are capped separately at 20.
+
+Reading speed is `PIPER_LENGTH_SCALE`, below 1 faster and above 1 slower.
+Like `TTS_VOICE`, it is read from `/etc/irlos-web.env`, so changing it is one
+line and `systemctl restart irlos-web` rather than a deploy.
+
+A cap of one makes being refused a normal outcome rather than a corner case,
+and a refusal is indistinguishable from a dropped network at the media element:
+both are an `error` event and nothing else. So the page asks
+`/tts/api/capacity/:slug` after a failure and says which one it was. That route
+reserves nothing, because asking must not take the slot the caller wants, and
+it answers `refused` rather than `full`: a channel that already has a session
+is let in regardless of the count, which is the case of a listener reconnecting
+to the channel they were already on.
+
+`TTS_ENGINE=espeak-ng` is still there as the fallback, needs no model file, and
+costs almost nothing to run:
+
+```
+apt install espeak-ng mbrola mbrola-us1 mbrola-us2 mbrola-us3
+```
+
+The mbrola voices are in multiverse, and `TTS_VOICE` picks between them:
+`mb-us1` female, `mb-us2` and `mb-us3` the two males. `espeak-ng --voices=mb`
+lists what is actually installed.
+
+The only npm addition is `ws`, because `globalThis.WebSocket` does not exist on
+the Node 20 the box runs, so the built in one would work in dev and throw in
+production.
+
+nginx buffers proxied responses by default, which puts tens of seconds of
+latency on the stream, so `/tts/stream/` and `/tts/api/` have their own blocks
+in `deploy/nginx.conf` with `proxy_buffering off`. Both are `^~` because a
+regex location beats a plain prefix, and the extension matches further down the
+file would otherwise get a say. `/tts/api/` needs its own block because
+`location /api/` does not match a path that starts with `/tts`.
+
+Three gotchas worth knowing before changing anything in here. Pusher delivers
+the chat payload as a JSON-encoded *string* inside `data`, so it needs decoding
+twice; read it once and every message looks empty. And the speech child emits
+one continuous PCM stream with nothing in the bytes marking where one line ends
+and the next begins, which is why exactly one line is ever in flight, and why
+the end of a line has to be inferred from the child going quiet.
+
+Where that inference happens is the whole latency story. It used to happen on
+the quiet gate, so every message waited out the full gate before its first word
+even though the first pipe read had already delivered about 1.5s of audio.
+Now playback starts on a 250ms jitter buffer, the gate is per engine (150ms for
+piper, 400ms for espeak, which genuinely does trickle), and whether the line has
+*ended* is decided in `read()` at the moment the buffer runs dry, when all three
+of "nothing written and awaited, nothing pending, quiet since" are actually
+known. Deciding late is what makes the short gate safe. With the model also
+loaded up front by `speech.warm()` instead of in front of the first message,
+mean time to first audio on the box went from 2090ms to 1241ms.
+
+One consequence worth keeping: a line whose first sentence is very short, like
+`lol. what about the battery?`, will underrun between the two, because `lol.`
+finishes playing while sentence two is still being inferred. It is audible as a
+slightly long beat at the full stop and never as a glitch mid-word, since
+sentences are the unit handed to piper. `stranded` on the status endpoint counts
+audio that arrived with no line in flight, which outside of a skip means a
+boundary was called wrong and a message lost its tail.
+
+That inference is the third one, and it is why a line is handed to piper one
+sentence at a time. piper infers a sentence at a time and emits each in a
+burst, so the gap between two sentences of one message is however long the
+second takes to infer, which at a real-time factor of 0.5 is seconds and looks
+exactly like the end of the message. Write a whole line at once and
+`lol. what about the battery?` plays `lol.`, runs dry while sentence two is
+still being inferred, finalises, and discards the rest: the message is
+truncated and nothing reports it. Measured, not theoretical — `first. second.
+third. fourth. fifth.` came out as 2.5s of audio instead of 4.7s. espeak is
+fast enough that a whole line clears one 400ms window, so it is still written
+whole.
 
 ## deploy
 

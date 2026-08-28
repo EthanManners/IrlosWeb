@@ -29,6 +29,42 @@ export const STRIPE_PRICE_BACKPACK_FULL = process.env.STRIPE_PRICE_BACKPACK_FULL
 export const ADMIN_USER = process.env.ADMIN_USER || '';
 export const ADMIN_PASS = process.env.ADMIN_PASS || '';
 
+/* Chat reader. piper with the hfc_female medium voice is the default: it is a
+   neural model and sounds like a present day screen reader rather than the
+   concatenative mbrola voices, which are recognisably a 1990s sound. espeak-ng
+   is kept as the fallback because it is packaged everywhere and needs no model
+   file, so the reader still works on a machine where piper is not installed. */
+export const TTS_ENGINE = process.env.TTS_ENGINE || 'piper';
+/* espeak-ng only. mb-us1 is the US female mbrola voice; mb-us2 and mb-us3 are
+   the two males, and all three need their own apt package. */
+export const TTS_VOICE = process.env.TTS_VOICE || 'mb-us1';
+
+/* Defaults are the layout piper is installed in on the box, so production is
+   right without an env file. Dev machines that put it somewhere else set
+   PIPER_BIN and PIPER_MODEL in .env. The binary is the standalone 2023.11.14
+   release, which carries its own onnxruntime and espeak-ng-data beside it and
+   finds them through an $ORIGIN runpath, so it must be run from its real
+   directory rather than copied out of it. */
+export const PIPER_BIN = process.env.PIPER_BIN || '/opt/piper/piper';
+export const PIPER_MODEL = process.env.PIPER_MODEL ||
+  '/opt/piper/voices/en_US-hfc_female-medium.onnx';
+/* piper --output_raw is headerless, so unlike espeak there is no header to
+   read the rate out of and it has to be declared. Every piper voice states its
+   rate in the .onnx.json beside it; hfc_female medium is 22050. */
+export const PIPER_RATE = Number(process.env.PIPER_RATE || 22050);
+/* Phoneme duration multiplier. Below 1 is faster and above 1 is slower, and
+   the model's own default is 1. Here so the reading speed can be tuned with a
+   line in /etc/irlos-web.env and a restart rather than a deploy. */
+export const PIPER_LENGTH_SCALE = Number(process.env.PIPER_LENGTH_SCALE || 1);
+
+/* How many channels may be read at once. piper holds ~143MB resident per
+   session and runs at roughly half of real time on the box's single core, so
+   two of them would contend for that core and three would exhaust the memory.
+   espeak costs almost nothing by comparison and can afford the old cap. */
+export const TTS_MAX_SESSIONS = Number(
+  process.env.TTS_MAX_SESSIONS || (TTS_ENGINE === 'piper' ? 1 : 8)
+);
+
 export const OPERATOR_EMAIL = process.env.OPERATOR_EMAIL || '';
 export const SMTP_HOST = process.env.SMTP_HOST || 'localhost';
 export const SMTP_PORT = Number(process.env.SMTP_PORT || 25);

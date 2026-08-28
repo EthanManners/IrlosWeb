@@ -629,3 +629,58 @@ table.tbl { border-collapse: collapse; width: 100%; border: 1px solid var(--rule
   .co-main { order: 1; }
   .co-side { order: 2; position: static; }
 }
+
+/* ══ CHAT READER ══ */
+
+/* This page gets used one handed, on a phone, usually walking. Everything
+   here is sized for a thumb rather than a cursor. */
+
+.tts-wrap { padding: 2.6rem 0 4.5rem; }
+
+.tts { display: grid; gap: 1rem; max-width: 30rem; }
+
+.tts-field label {
+  display: block; margin-bottom: 0.55rem;
+  font-size: 0.66rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted);
+}
+
+.tts-field input {
+  display: block; width: 100%;
+  padding: 1rem 0.9rem;
+  font-family: var(--mono);
+  /* 16px: anything smaller makes iOS Safari zoom the page on focus, and a
+     zoomed page is the thing you cannot undo one handed */
+  font-size: 16px; line-height: 1.4;
+  color: var(--text);
+  background: #131519;
+  border: 1px solid #3d3d42; border-radius: 0;
+  transition: border-color 110ms linear, box-shadow 110ms linear;
+}
+.tts-field input::placeholder { color: #66615a; }
+.tts-field input:hover { border-color: #55555c; }
+.tts-field input:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent); background: #0b0d0e;
+}
+
+.tts-play {
+  display: block; width: 100%;
+  /* comfortably past the 44px Apple asks for, because this is the one
+     control that matters and it gets pressed without looking */
+  min-height: 3.4rem;
+  font-size: 0.9rem;
+}
+
+.tts-state {
+  margin: 1.2rem 0 0; max-width: 30rem;
+  font-size: 0.8rem; color: var(--muted); line-height: 1.55;
+  /* holds its line whether or not there is anything to say, so the button
+     under a thumb does not move as the status changes */
+  min-height: 1.4rem;
+}
+.tts-state.is-error { color: #ff8080; }
+
+.tts-note {
+  margin: 2rem 0 0; max-width: 52ch;
+  font-size: 0.74rem; color: var(--dim); line-height: 1.6;
+}

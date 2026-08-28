@@ -1,5 +1,9 @@
 node_modules/
 .env
+
+# Downloaded piper voice, 61MB of onnx weights. Lives in /opt/piper/voices on
+# the box; the README has the URL to fetch it from.
+hfc_female/
 data/
 *.db
 *.db-journal

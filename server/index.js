@@ -8,6 +8,7 @@ import './lib/db.js';
 import webhookRouter from './routes/webhook.js';
 import checkoutRouter from './routes/checkout.js';
 import adminRouter from './routes/admin.js';
+import ttsRouter from './routes/tts.js';
 
 const app = express();
 app.disable('x-powered-by');
@@ -60,6 +61,11 @@ app.get('/api/config', async (req, res) => {
 
 app.use('/api', checkoutRouter);
 app.use('/admin', adminRouter);
+
+/* The chat reader. Only /tts/stream and /tts/api are handled here; GET /tts
+   falls through to the static page below like every other page on the site.
+   nginx needs its own blocks for this in production, see deploy/nginx.conf. */
+app.use('/tts', ttsRouter);
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'not found' }));
 

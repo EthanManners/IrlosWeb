@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>irlos: chat reader</title>
+  <meta name="description" content="Listen to a Kick channel's chat read aloud, as one continuous stream that keeps playing with the screen locked." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/irlos.css" />
+</head>
+<body>
+
+  <div data-chrome="header"></div>
+
+  <section class="page-head">
+    <div class="wrap">
+      <span class="flag">kick chat &middot; plays with the screen locked</span>
+      <h1>chat <em>reader</em></h1>
+      <p class="prose">Type a Kick channel, press play, lock your phone. The chat comes back as one continuous stream, so it keeps going with the screen off and the phone in your pocket.</p>
+    </div>
+  </section>
+
+  <main id="main">
+    <section class="wrap tts-wrap">
+
+      <form class="tts" id="ttsForm" novalidate>
+        <div class="tts-field">
+          <label for="ttsChannel">kick channel</label>
+          <input type="text" id="ttsChannel" name="channel"
+                 inputmode="text" spellcheck="false" autocapitalize="off"
+                 autocorrect="off" autocomplete="off" enterkeyhint="go"
+                 maxlength="25" placeholder="channel name" />
+        </div>
+        <button class="btn btn-solid tts-play" id="ttsPlay" type="submit">play</button>
+      </form>
+
+      <p class="tts-state" id="ttsState" role="status" aria-live="polite"></p>
+
+      <!-- The whole design rests on this one element. iOS Safari suspends Web
+           Audio, Web Speech and any JS that would advance a playlist as soon
+           as the screen locks; a single media element playing an unbroken
+           stream, started by a tap, is the only thing that survives. -->
+      <audio id="ttsAudio" preload="none" playsinline></audio>
+
+      <p class="tts-note">Only the five most recent messages are held, so on a busy channel you hear what is being said now rather than falling further behind. Bot commands, links and repeated spam are skipped, and each person gets three lines every thirty seconds. Chat is read as it arrives: nothing is filtered for language.</p>
+
+    </section>
+  </main>
+
+  <div data-chrome="footer"></div>
+
+  <script src="/js/chrome.js"></script>
+  <script src="/js/tts.js"></script>
+</body>
+</html>

@@ -19,7 +19,8 @@
     "express-rate-limit": "^7.4.0",
     "helmet": "^8.0.0",
     "nodemailer": "^6.9.14",
-    "stripe": "^16.8.0"
+    "stripe": "^16.8.0",
+    "ws": "^8.21.3"
   },
   "allowScripts": {
     "better-sqlite3@12.11.1": true
