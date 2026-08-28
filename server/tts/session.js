@@ -348,6 +348,7 @@ export function status(slug) {
       received: session.kick ? session.kick.received : 0,
       queued: q.accepted,
       dropped: q.rejected,
+      muted: q.muted,
       overflowed: q.overflowed
     },
     speech: {
