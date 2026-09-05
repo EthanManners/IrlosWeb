@@ -44,7 +44,7 @@
            stream, started by a tap, is the only thing that survives. -->
       <audio id="ttsAudio" preload="none" playsinline></audio>
 
-      <p class="tts-note">Only the five most recent messages are held, so on a busy channel you hear what is being said now rather than falling further behind. Bot commands, links and repeated spam are skipped, and each person gets three lines every thirty seconds. Chat is read as it arrives: nothing is filtered for language.</p>
+      <p class="tts-note">Chat is read as it arrives, spam and all: nothing is deduplicated, nobody is rate limited, and nothing is filtered for language. Bot commands and links are skipped, and emotes are read as their name. Only the twelve most recent messages are held, so when chat is coming in faster than a voice can speak you hear what is being said now rather than falling further behind.</p>
 
     </section>
   </main>

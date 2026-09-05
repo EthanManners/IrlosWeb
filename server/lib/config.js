@@ -61,6 +61,13 @@ export const PIPER_LENGTH_SCALE = Number(process.env.PIPER_LENGTH_SCALE || 1);
    session and runs at roughly half of real time on the box's single core, so
    two of them would contend for that core and three would exhaust the memory.
    espeak costs almost nothing by comparison and can afford the old cap. */
+/* Messages held for reading, oldest dropped when the queue is full. With no
+   spam filtering left this is the only thing that ever drops a message, and
+   it is a throughput bound, not a judgement: one voice speaks one line at a
+   time in real time, so a deeper queue lengthens the lag rather than reading
+   more per minute. */
+export const TTS_QUEUE_DEPTH = Number(process.env.TTS_QUEUE_DEPTH || 12);
+
 export const TTS_MAX_SESSIONS = Number(
   process.env.TTS_MAX_SESSIONS || (TTS_ENGINE === 'piper' ? 1 : 8)
 );

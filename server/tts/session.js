@@ -66,8 +66,12 @@ function makeSource(session) {
     if (!session.speech.busy && session.queue.depth > 0) {
       const item = session.queue.shift();
       if (item) {
-        const line = utteranceFor(item);
-        if (!session.speech.say(line)) session.speechFailures++;
+        const line = utteranceFor(item, session.lastSpokenUser);
+        /* Only a line that actually reached the synthesiser counts as this
+           user having spoken. If say() fails nothing was read out, so the
+           next line from the same person still needs its name. */
+        if (session.speech.say(line)) session.lastSpokenUser = item.user;
+        else session.speechFailures++;
       }
     }
     return null;
@@ -96,6 +100,10 @@ function createSession(slug) {
     speech: null,
     kick: null,
     chatroom: null,
+    /* Who the voice last read out, so a run of lines from one person is
+       announced once rather than once per line. Lives on the session because
+       it is a property of what has been heard, not of what is queued. */
+    lastSpokenUser: null,
     ws: 'connecting',
     wsDetail: '',
     speechFailures: 0,

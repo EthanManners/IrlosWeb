@@ -72,11 +72,23 @@ on a stream that is still running, never as a stream that fails to start: a
 phone that is already playing keeps playing, and one that never started cannot
 be restarted without another tap.
 
-Messages are queued five deep, oldest dropped, so a busy channel stays current
-rather than narrating the past. Bot commands, links and repeated text are
-dropped, emotes read as their name, and each user gets three lines per thirty
-seconds. Chat is read verbatim otherwise: there is no language filter, and
-adding one would be a wordlist in `server/tts/queue.js`.
+There is no spam filtering: no dedupe, no per-user rate limit, no language
+filter. The channel wants a hectic chat, so everything anybody types is read.
+Bot commands and links are skipped and emotes read as their name, all in
+`speakable()` in `server/tts/queue.js`, which is about text that does not
+survive being read aloud rather than about who is allowed to talk.
+
+The one bound left is depth. A voice speaks one line at a time in real time,
+so above roughly one message every three seconds the queue is what decides
+what gets heard: it holds `TTS_QUEUE_DEPTH` messages (12) and drops the
+oldest, so the reader stays current instead of narrating the past. Raising it
+does not read more messages per minute, it only lengthens the lag before the
+same overflow happens.
+
+A run of messages from one person is announced once: `utteranceFor()` prefixes
+`{user} says` only when the speaker has changed since the last line actually
+spoken. Besides being what a listener wants, it is throughput — the prefix is
+about a second of speech.
 
 ### the voice
 

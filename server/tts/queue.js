@@ -1,24 +1,22 @@
 /* What is worth saying out loud, and in what order.
 
-   Chat is hostile input in the ordinary sense: it is fast, repetitive, full of
-   things that do not survive being read aloud, and occasionally a person
-   trying to make the stream say something. Everything here is either about
-   making text speakable or about stopping one person owning the audio. */
+   Everything here is about making text speakable. There is deliberately no
+   spam filtering: no dedupe, no per-user rate limit. The streamer wants a
+   hectic chat, so a person hammering enter and six people posting the same
+   emote all get read. The only bound left is the queue depth, which is a
+   throughput limit rather than a judgement about the message. */
 
-/* Five is about fifteen seconds of speech. Deeper than that and the reader is
-   narrating the past: chat has moved on and the audio is still catching up,
-   which is worse than having missed a line. */
-const DEPTH = 5;
+import { TTS_QUEUE_DEPTH } from '../lib/config.js';
+
+/* The reader can only ever speak one line at a time in real time, so on a
+   channel busier than roughly one message every three seconds the queue is
+   the thing deciding what gets heard. Too shallow and a burst is thrown away;
+   too deep and the reader narrates the past while chat has moved on. Tunable
+   from the environment because the right number depends on the channel; read
+   through config.js so it arrives after dotenv rather than before it. */
+const DEPTH = TTS_QUEUE_DEPTH;
 
 const MAX_CHARS = 120;
-
-/* Per user, so one person hammering enter cannot hold the queue. */
-const USER_LIMIT = 3;
-const USER_WINDOW_MS = 30 * 1000;
-
-/* Copy pasted spam and the same emote reply from six people in a row are the
-   two things chat does most. Neither is worth hearing twice. */
-const DEDUPE_MS = 60 * 1000;
 
 /* Accounts never read out, whatever they say. KickBot is on nearly every
    channel and it announces follows, subs, hosts and timeouts, which is a
@@ -28,18 +26,8 @@ const DEDUPE_MS = 60 * 1000;
    another bot here is one line. */
 const MUTED_USERS = new Set(['kickbot']);
 
-/* Bounded so a busy channel cannot grow these forever. Both are swept on
-   every push, and anything outside its window is dead weight. */
-function sweep(map, now, windowMs) {
-  for (const [key, at] of map) {
-    if (now - at > windowMs) map.delete(key);
-  }
-}
-
 export function createQueue() {
   const items = [];
-  const lastByText = new Map();   // normalised text -> when it was last spoken
-  const userTimes = new Map();    // username -> array of send times
 
   let accepted = 0;
   let rejected = 0;
@@ -49,37 +37,17 @@ export function createQueue() {
   let muted = 0;
 
   return {
-    /* Returns true if the message was queued. Everything else is dropped on
-       purpose and counted, so the status endpoint can show it. */
+    /* Returns true if the message was queued. The only reasons left for a
+       false are a muted bot and a message with nothing speakable in it, and
+       both are counted so the status endpoint can show them. */
     push(username, text, now = Date.now()) {
       const user = String(username || '').trim();
       if (!user) { rejected++; return false; }
 
-      /* Before anything else, including the rate limit and dedupe bookkeeping:
-         a muted account should leave no trace in either, or its traffic would
-         still shape what everyone else gets to say. */
       if (MUTED_USERS.has(user.toLowerCase())) { muted++; return false; }
 
       const clean = speakable(text);
       if (!clean) { rejected++; return false; }
-
-      /* Rate limit before dedupe: a user at their limit should not get a free
-         pass just because the text happens to be new. */
-      const times = (userTimes.get(user) || []).filter((t) => now - t < USER_WINDOW_MS);
-      if (times.length >= USER_LIMIT) { rejected++; return false; }
-      times.push(now);
-      userTimes.set(user, times);
-
-      const key = clean.toLowerCase();
-      const seen = lastByText.get(key);
-      if (seen !== undefined && now - seen < DEDUPE_MS) { rejected++; return false; }
-      lastByText.set(key, now);
-
-      sweep(lastByText, now, DEDUPE_MS);
-      for (const [u, list] of userTimes) {
-        const kept = list.filter((t) => now - t < USER_WINDOW_MS);
-        if (kept.length) userTimes.set(u, kept); else userTimes.delete(u);
-      }
 
       /* Ring buffer: when it is full the oldest goes, not the newest. During a
          burst the recent lines are the ones still worth hearing. */
@@ -108,9 +76,18 @@ export function createQueue() {
 }
 
 /* How a queued message is read out. Kept here next to the sanitiser because
-   the two together decide everything the voice ever says. */
-export function utteranceFor(item) {
-  return `${item.user} says ${item.text}`;
+   the two together decide everything the voice ever says.
+
+   The name is only announced when the speaker has changed. Someone typing
+   three lines in a row is one person talking, and "ethan says, ethan says,
+   ethan says" costs about a second of speech each time for something the
+   listener already knows. `lastUser` is whoever was last *spoken*, not
+   whoever last posted, so a line dropped by the queue can never make the
+   next one lose its name. Compared case-insensitively because the same
+   sender arrives as a display name or a slug depending on the chat event. */
+export function utteranceFor(item, lastUser = null) {
+  const same = lastUser && lastUser.toLowerCase() === item.user.toLowerCase();
+  return same ? item.text : `${item.user} says ${item.text}`;
 }
 
 /* ── making text speakable ───────────────────────────────────────────────── */
