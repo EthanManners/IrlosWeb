@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>irlos cloud: subscribe</title>
+  <meta name="description" content="Subscribe to IRLOS Cloud. Managed stream server with IrlosStudio, $30 a month." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/irlos.css" />
+</head>
+<body>
+
+  <div data-chrome="header"></div>
+
+  <section class="page-head co-head">
+    <div class="wrap">
+      <span class="flag">managed server &middot; $30/mo</span>
+      <h1>subscribe to <em>cloud</em></h1>
+      <p class="prose">Your own machine in the cloud running IrlosStudio. Provisioned by hand within 24 hours of payment, and the connection details land in your inbox.</p>
+    </div>
+  </section>
+
+  <main id="main">
+    <section class="wrap co-wrap">
+      <form class="co" id="payForm" novalidate>
+
+        <div class="co-main">
+
+          <section class="co-step">
+            <h2 class="co-step-h"><span class="co-n">01</span>contact</h2>
+            <div class="co-field">
+              <label for="coEmail">email address</label>
+              <input type="email" id="coEmail" name="email" autocomplete="email"
+                     inputmode="email" spellcheck="false" autocapitalize="off"
+                     required placeholder="you@example.com" />
+              <p class="co-hint">Connection details and billing receipts go here.</p>
+            </div>
+          </section>
+
+          <section class="co-step">
+            <h2 class="co-step-h"><span class="co-n">02</span>payment</h2>
+            <div id="paymentElement" class="co-mount"></div>
+            <p class="co-secure">Card details go straight to Stripe and never touch this server.</p>
+          </section>
+
+        </div>
+
+        <aside class="co-side">
+          <div class="co-summary">
+            <div class="co-sum-head">your subscription</div>
+
+            <div class="co-item">
+              <h2 class="co-item-name">irlos-cloud</h2>
+              <p class="co-item-desc">Your own machine in the cloud running IrlosStudio, one button press from live.</p>
+              <div class="co-item-price"><span data-cloud-price>$30</span><small>/mo</small></div>
+            </div>
+
+            <ul class="co-inc">
+              <li>IrlosStudio with full scenes, sources and overlays</li>
+              <li>Web control panel, nothing to install</li>
+              <li>Dedicated SRT ingest, forward anywhere</li>
+              <li>Automatic bitrate management</li>
+              <li>Chat commands: start, stop, bitrate, scene</li>
+              <li>You email me when something breaks</li>
+            </ul>
+
+            <div class="co-total">
+              <span>total due today</span>
+              <b data-cloud-price>$30</b>
+            </div>
+
+            <div class="co-act">
+              <div class="co-final">
+                <p><strong>Provisioned by hand within 24 hours.</strong> I set up each server myself and email you the connection details as soon as it is live.</p>
+                <p>Renews at $30/month. Cancel any time from the billing portal. <a href="/terms/">Full terms</a>.</p>
+              </div>
+
+              <button class="btn btn-solid co-pay" id="payBtn" type="submit" disabled>loading</button>
+              <p class="co-msg" id="payMsg" role="status" aria-live="polite"></p>
+            </div>
+          </div>
+        </aside>
+
+      </form>
+    </section>
+  </main>
+
+  <div data-chrome="footer"></div>
+
+  <script src="/js/chrome.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="/js/pay-cloud.js"></script>
+</body>
+</html>

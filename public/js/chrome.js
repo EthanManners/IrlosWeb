@@ -52,15 +52,17 @@
       '</div></footer>';
   }
 
-  /* The ship date and the price each have one source: config.js and the Stripe
-     price object. The markup carries a fallback for when this call fails. */
+  /* The ship date and the prices have one source: config.js and the Stripe
+     price objects. The markup carries a fallback for when this call fails. */
   var dates = document.querySelectorAll('[data-ship-date]');
   var prices = document.querySelectorAll('[data-price]');
-  if (dates.length || prices.length) {
+  var cloudPrices = document.querySelectorAll('[data-cloud-price]');
+  if (dates.length || prices.length || cloudPrices.length) {
     fetch('/api/config').then(function (r) { return r.json(); }).then(function (c) {
       if (!c) return;
       if (c.shipDate) [].forEach.call(dates, function (el) { el.textContent = c.shipDate; });
       if (c.price) [].forEach.call(prices, function (el) { el.textContent = c.price; });
+      if (c.cloudPrice) [].forEach.call(cloudPrices, function (el) { el.textContent = c.cloudPrice; });
     }).catch(function () {});
   }
 })();

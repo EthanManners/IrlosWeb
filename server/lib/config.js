@@ -24,6 +24,7 @@ export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 export const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || '';
 export const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 export const STRIPE_PRICE_CLOUD = process.env.STRIPE_PRICE_CLOUD || '';
+export const STRIPE_PRODUCT_CLOUD = process.env.STRIPE_PRODUCT_CLOUD || 'prod_VJbVfiXOrZrtJN';
 export const STRIPE_PRICE_BACKPACK_FULL = process.env.STRIPE_PRICE_BACKPACK_FULL || '';
 
 export const ADMIN_USER = process.env.ADMIN_USER || '';
@@ -82,10 +83,13 @@ export const SMTP_PASS = process.env.SMTP_PASS || '';
    still starts so the static site and health check stay up. */
 const needed = [
   'STRIPE_SECRET_KEY', 'STRIPE_PUBLISHABLE_KEY', 'STRIPE_WEBHOOK_SECRET',
-  'STRIPE_PRICE_CLOUD', 'STRIPE_PRICE_BACKPACK_FULL',
+  'STRIPE_PRICE_BACKPACK_FULL',
   'SITE_URL', 'ADMIN_USER', 'ADMIN_PASS', 'OPERATOR_EMAIL'
 ];
 for (const name of needed) {
   if (!process.env[name]) console.warn(`[config] ${name} is not set`);
+}
+if (!process.env.STRIPE_PRICE_CLOUD && !STRIPE_PRODUCT_CLOUD) {
+  console.warn('[config] Neither STRIPE_PRICE_CLOUD nor STRIPE_PRODUCT_CLOUD is set');
 }
 if (!SHIP_DATE) console.warn('[config] SHIP_DATE is unset, buy controls will say TBD');

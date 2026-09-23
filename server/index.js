@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PORT, shipDateText, STRIPE_PUBLISHABLE_KEY } from './lib/config.js';
-import { backpackPrice } from './lib/price.js';
+import { backpackPrice, cloudPrice } from './lib/price.js';
 import './lib/db.js';
 import webhookRouter from './routes/webhook.js';
 import checkoutRouter from './routes/checkout.js';
@@ -56,6 +56,11 @@ app.get('/api/config', async (req, res) => {
        fall back to the figure in their own markup. */
     console.error('[config] backpack price unavailable:', err.message);
   }
+  try {
+    body.cloudPrice = (await cloudPrice()).display;
+  } catch (err) {
+    console.error('[config] cloud price unavailable:', err.message);
+  }
   res.json(body);
 });
 
@@ -80,6 +85,10 @@ app.use((req, res, next) => {
   if (!m) return next();
   const slug = m[1].replace(/(^|\/)index$/, '');
   res.redirect(301, slug ? `/${slug}/` : '/');
+});
+
+app.get(['/cloud/checkout', '/cloud/checkout/', '/checkout/cloud', '/checkout/cloud/'], (req, res) => {
+  res.redirect(301, '/subscribe/');
 });
 
 app.use(express.static(pub));

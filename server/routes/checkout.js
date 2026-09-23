@@ -6,7 +6,7 @@ import {
   SITE_URL, shipDateText
 } from '../lib/config.js';
 import { orderBySession, customerByEmail } from '../lib/db.js';
-import { backpackPrice } from '../lib/price.js';
+import { backpackPrice, cloudPrice } from '../lib/price.js';
 
 /* apiVersion pinned on purpose: an unpinned SDK changes behaviour on deploy */
 const stripe = new Stripe(STRIPE_SECRET_KEY || 'sk_unset', { apiVersion: '2024-06-20' });
@@ -21,6 +21,7 @@ const limiter = rateLimit({
 });
 router.use('/checkout', limiter);
 router.use('/payment-intent', limiter);
+router.use('/subscribe-intent', limiter);
 router.use('/portal', limiter);
 
 /* success_url keeps the literal {CHECKOUT_SESSION_ID} template, unencoded.
@@ -30,9 +31,10 @@ const CANCEL_URL = `${SITE_URL}/cancel/`;
 
 router.post('/checkout/cloud', async (req, res) => {
   try {
+    const price = await cloudPrice();
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
-      line_items: [{ price: STRIPE_PRICE_CLOUD, quantity: 1 }],
+      line_items: [{ price: price.id, quantity: 1 }],
       success_url: SUCCESS_URL,
       cancel_url: CANCEL_URL,
       metadata: { sku: 'cloud' },
@@ -46,6 +48,46 @@ router.post('/checkout/cloud', async (req, res) => {
     res.json({ url: session.url });
   } catch (err) {
     console.error('[checkout/cloud]', err.message);
+    res.status(502).json({ error: 'could not start checkout' });
+  }
+});
+
+/* Cloud subscriptions sold through the site's own checkout form. Creates an
+   incomplete subscription on Stripe and returns the initial PaymentIntent
+   clientSecret for Stripe Elements to confirm. */
+router.post('/subscribe-intent', async (req, res) => {
+  try {
+    const price = await cloudPrice();
+    const customer = await stripe.customers.create({
+      metadata: { sku: 'cloud' }
+    });
+    const subscription = await stripe.subscriptions.create({
+      customer: customer.id,
+      items: [{ price: price.id, quantity: 1 }],
+      payment_behavior: 'default_incomplete',
+      payment_settings: { save_default_payment_method: 'on_subscription' },
+      expand: ['latest_invoice.payment_intent'],
+      metadata: { sku: 'cloud' }
+    });
+
+    const paymentIntent = subscription.latest_invoice && subscription.latest_invoice.payment_intent;
+    if (paymentIntent) {
+      await stripe.paymentIntents.update(paymentIntent.id, {
+        description: 'irlos-cloud, managed server, $30/mo',
+        metadata: { sku: 'cloud' }
+      });
+    }
+
+    res.json({
+      clientSecret: paymentIntent ? paymentIntent.client_secret : null,
+      subscriptionId: subscription.id,
+      customerId: customer.id,
+      amount: price.amount,
+      currency: price.currency,
+      display: price.display
+    });
+  } catch (err) {
+    console.error('[subscribe-intent]', err.message);
     res.status(502).json({ error: 'could not start checkout' });
   }
 });
