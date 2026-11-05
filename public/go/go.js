@@ -124,7 +124,11 @@ $('login').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = new FormData(e.target);
   say('');
-  const r = await api('account/login', { username: f.get('username'), password: f.get('password') });
+  const r = await api('account/login', {
+    username: f.get('username'),
+    password: f.get('password'),
+    remember: f.get('remember') === 'on'
+  });
   if (!r.ok) return say(r.data.message || 'Could not sign in.');
   e.target.reset();
   boot();

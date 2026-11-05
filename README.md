@@ -206,8 +206,10 @@ phone ──HTTPS──▶ irlos.live /api/stream ──ssh (forced command)─�
 
 - Accounts live in SQLite (`users`, `sessions`, `seats`). Passwords are scrypt
   hashes; sessions are random tokens in an HttpOnly, Secure, SameSite=Strict
-  cookie, stored hashed. New accounts get a temporary password and have to
-  change it on first sign-in before they can do anything else.
+  cookie, stored hashed. "Remember me" keeps a device signed in for 90 days;
+  without it the cookie ends with the browser and the session after 12 hours.
+  New accounts get a temporary password and have to change it on first
+  sign-in before they can do anything else.
 - The seat comes from the account, never from the request. `server/lib/seat.js`
   keeps one SSH connection per seat and speaks ICP framing over it.
 - The key is `/etc/irlos-web/seat_key` (owner `irlos`, 600), with the seat host

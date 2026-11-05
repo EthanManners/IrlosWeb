@@ -12,7 +12,11 @@ const scrypt = promisify(scryptCb);
 const N = 32768, R = 8, P = 1, KEYLEN = 32, MAXMEM = 64 * 1024 * 1024;
 
 export const COOKIE = 'irlos_session';
-const SESSION_DAYS = 30;
+/* "Remember me" keeps a device signed in for 90 days. Without it the cookie
+   dies with the browser, and the server ends the session after 12 hours
+   either way, since mobile browsers often keep session cookies for days. */
+const REMEMBER_MS = 90 * 864e5;
+const SESSION_MS = 12 * 3600e3;
 export const MIN_PASSWORD = 10;
 
 const stmt = {
@@ -76,10 +80,10 @@ export function temporaryPassword() {
   return `${group()}-${group()}-${group()}`;
 }
 
-export function createSession(userId) {
+export function createSession(userId, remember) {
   stmt.pruneSessions.run(now());
   const token = randomBytes(32).toString('base64url');
-  const expires = new Date(Date.now() + SESSION_DAYS * 864e5).toISOString();
+  const expires = new Date(Date.now() + (remember ? REMEMBER_MS : SESSION_MS)).toISOString();
   stmt.insertSession.run(sha256(token), userId, now(), expires);
   return token;
 }
@@ -106,9 +110,9 @@ export function cookieValue(req) {
   return '';
 }
 
-export function setSessionCookie(res, token) {
-  res.setHeader('Set-Cookie',
-    `${COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_DAYS * 86400}`);
+export function setSessionCookie(res, token, remember) {
+  const maxAge = remember ? `; Max-Age=${REMEMBER_MS / 1000}` : '';
+  res.setHeader('Set-Cookie', `${COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Strict${maxAge}`);
 }
 
 export function clearSessionCookie(res) {

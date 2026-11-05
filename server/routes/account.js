@@ -54,7 +54,7 @@ const me = (user) => ({
 });
 
 router.post('/login', loginLimiter, async (req, res) => {
-  const { username, password } = req.body || {};
+  const { username, password, remember } = req.body || {};
   if (typeof username !== 'string' || typeof password !== 'string' || password.length > 256) {
     return res.status(400).json({ error: 'invalid_input' });
   }
@@ -63,8 +63,9 @@ router.post('/login', loginLimiter, async (req, res) => {
     console.log(`[account] failed login for "${username.slice(0, 64)}" from ${req.ip}`);
     return res.status(401).json({ error: 'bad_login', message: 'Wrong username or password.' });
   }
-  setSessionCookie(res, createSession(user.id));
-  console.log(`[account] ${user.username} signed in from ${req.ip}`);
+  const keep = remember === true;
+  setSessionCookie(res, createSession(user.id, keep), keep);
+  console.log(`[account] ${user.username} signed in from ${req.ip}${keep ? ' (remembered)' : ''}`);
   res.json(me(user));
 });
 
