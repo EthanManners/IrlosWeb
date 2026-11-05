@@ -195,6 +195,41 @@ third. fourth. fifth.` came out as 2.5s of audio instead of 4.7s. espeak is
 fast enough that a whole line clears one 400ms window, so it is still written
 whole.
 
+## stream control (`/go`)
+
+`irlos.live/go` is the streamer's phone remote: sign in, then one button that
+starts and stops their stream. It drives irlosd on their GPU seat as ICP.
+
+```
+phone ──HTTPS──▶ irlos.live /api/stream ──ssh (forced command)──▶ GPU: irlosd bridge ──ICP──▶ irlosd
+```
+
+- Accounts live in SQLite (`users`, `sessions`, `seats`). Passwords are scrypt
+  hashes; sessions are random tokens in an HttpOnly, Secure, SameSite=Strict
+  cookie, stored hashed. New accounts get a temporary password and have to
+  change it on first sign-in before they can do anything else.
+- The seat comes from the account, never from the request. `server/lib/seat.js`
+  keeps one SSH connection per seat and speaks ICP framing over it.
+- The key is `/etc/irlos-web/seat_key` (owner `irlos`, 600), with the seat host
+  keys pinned in `/etc/irlos-web/known_hosts`. On each GPU host, the
+  `irlosweb` user's `authorized_keys` pins that key to one command and one
+  source address, so it can only speak ICP to irlosd:
+
+  ```
+  restrict,from="<web server IP>",command="docker exec -i irlosd irlosd bridge" ssh-ed25519 AAAA... irlos-web@irlos.live
+  ```
+
+Accounts are managed on the box, as the service user so the database stays
+writable by the service:
+
+```sh
+cd /opt/irlos-web
+sudo -u irlos node server/bin/users.js seat gpu1 irlosweb@<gpu host>
+sudo -u irlos node server/bin/users.js add adrian gpu1     # prints a temporary password
+sudo -u irlos node server/bin/users.js reset adrian        # new temporary password, signs out everywhere
+sudo -u irlos node server/bin/users.js list
+```
+
 ## deploy
 
 Target: one box with nginx, node, postfix.

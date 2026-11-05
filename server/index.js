@@ -9,6 +9,8 @@ import webhookRouter from './routes/webhook.js';
 import checkoutRouter from './routes/checkout.js';
 import adminRouter from './routes/admin.js';
 import ttsRouter from './routes/tts.js';
+import accountRouter from './routes/account.js';
+import streamRouter from './routes/stream.js';
 
 const app = express();
 app.disable('x-powered-by');
@@ -65,6 +67,10 @@ app.get('/api/config', async (req, res) => {
 });
 
 app.use('/api', checkoutRouter);
+/* Stream control for /go: accounts, and the start/stop button that reaches
+   the user's irlosd as ICP over SSH. */
+app.use('/api/account', accountRouter);
+app.use('/api/stream', streamRouter);
 app.use('/admin', adminRouter);
 
 /* The chat reader. Only /tts/stream and /tts/api are handled here; GET /tts

@@ -73,6 +73,12 @@ export const TTS_MAX_SESSIONS = Number(
   process.env.TTS_MAX_SESSIONS || (TTS_ENGINE === 'piper' ? 1 : 8)
 );
 
+/* Stream control. The site reaches each seat's irlosd over SSH with this key;
+   the seat's authorized_keys pins it to a forced `irlosd bridge` command, so
+   the key can do nothing but speak ICP. known_hosts pins the seat host keys. */
+export const SEAT_SSH_KEY = process.env.SEAT_SSH_KEY || '/etc/irlos-web/seat_key';
+export const SEAT_KNOWN_HOSTS = process.env.SEAT_KNOWN_HOSTS || '/etc/irlos-web/known_hosts';
+
 export const OPERATOR_EMAIL = process.env.OPERATOR_EMAIL || '';
 export const SMTP_HOST = process.env.SMTP_HOST || 'localhost';
 export const SMTP_PORT = Number(process.env.SMTP_PORT || 25);

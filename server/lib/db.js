@@ -23,7 +23,30 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS webhook_events (id TEXT PRIMARY KEY, received_at TEXT NOT NULL);
+
+-- Stream control (/go). A seat is one irlosd, reached over SSH as ICP.
+CREATE TABLE IF NOT EXISTS seats (
+  name TEXT PRIMARY KEY,
+  ssh_target TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL COLLATE NOCASE,
+  password_hash TEXT NOT NULL,
+  must_change_password INTEGER NOT NULL DEFAULT 1,
+  seat TEXT REFERENCES seats(name),
+  created_at TEXT NOT NULL,
+  password_changed_at TEXT
+);
+CREATE TABLE IF NOT EXISTS sessions (
+  token_hash TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
 `);
+db.pragma('foreign_keys = ON');
 
 const stmt = {
   insertOrder: db.prepare(`

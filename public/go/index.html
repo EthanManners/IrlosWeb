@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#08080a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="irlos" />
+  <title>irlos · go live</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/go/go.css" />
+  <script src="/go/go.js" defer></script>
+</head>
+<body>
+  <main>
+    <header><b>irlos</b><span id="who"></span></header>
+
+    <form id="login" hidden>
+      <h1>Sign in</h1>
+      <label>Username <input name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required /></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required /></label>
+      <button>Sign in</button>
+    </form>
+
+    <form id="password" hidden>
+      <h1>Choose your password</h1>
+      <p>Replace the temporary password you were given. Ten characters or more.</p>
+      <label>Temporary password <input name="current" type="password" autocomplete="current-password" required /></label>
+      <label>New password <input name="next" type="password" autocomplete="new-password" minlength="10" required /></label>
+      <button>Save</button>
+    </form>
+
+    <section id="control" hidden>
+      <p id="clock" class="clock"></p>
+      <button id="go" class="go" type="button" disabled><b id="label">…</b><small id="hint"></small></button>
+      <p id="detail" class="detail"></p>
+    </section>
+
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+    <footer><button id="logout" class="link" type="button" hidden>Sign out</button></footer>
+  </main>
+</body>
+</html>
